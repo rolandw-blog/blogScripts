@@ -15,6 +15,20 @@ services:
             - ./blogBuilder/app:/usr/src/app
             - ./dist:/usr/src/app/dist
 
+    # ? Generally i start managementUI separately through its own docker-compose.yaml
+    # ?     This is so it can be restarted independently from the rest of the services
+    # ?     If you want to run it alongside with the rest of the development containers, then uncomment below
+    # management:
+    #     build:
+    #         context: ./managementUI
+    #         dockerfile: dockerfile.dev
+    #     stdin_open: true # https://github.com/facebook/create-react-app/issues/8688
+    #     container_name: management_dev
+    #     expose:
+    #         - "4000"
+    #     volumes:
+    #         - ./managementUI/frontend/src:/usr/src/app/src
+
 networks:
     default:
         external:
