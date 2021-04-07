@@ -1,0 +1,7 @@
+version: "3"
+services:
+    ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
+    blogbuilder:
+        volumes:
+            # Mount the output from the container to => the dist folder
+            - ./dist:/usr/src/app/dist
