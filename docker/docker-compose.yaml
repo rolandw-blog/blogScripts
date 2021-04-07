@@ -1,0 +1,53 @@
+version: "3"
+services:
+    auth:
+        build: ./auth
+        container_name: authentication
+        expose:
+            - "8080"
+
+    ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
+    # blogwatcher api
+    blogwatcher:
+        build: ./blogWatcher
+        container_name: blogwatcher
+        expose:
+            - "3001"
+        environment:
+            - PORT=3001
+
+    # blogwatcher api database
+    mongo:
+        container_name: blogwatcher_database
+        image: mongo
+        environment:
+            # back up admin user in case something goes wrong
+            - MONGO_INITDB_DATABASE=imageHost
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=rhinos
+        volumes:
+            # For the startup script that mongo runs to create a new user
+            - ./blogWatcher/app/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+            # Store the mongo database on the host to make it persistent between container restarts
+            - ./blogWatcher/mongo-volume:/data/db
+        ports:
+            - "27017:27017"
+        expose:
+            - 27017
+        command: mongod --auth --quiet
+        logging:
+            driver: none
+
+    ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
+    blogbuilder:
+        build: ./blogBuilder
+        container_name: blogbuilder
+        environment:
+            - PORT=3002
+        ports:
+            - "9229:9229"
+
+networks:
+    default:
+        external:
+            name: gateway_network

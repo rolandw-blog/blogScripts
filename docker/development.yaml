@@ -1,0 +1,21 @@
+version: "3"
+services:
+    auth:
+        volumes:
+            - ./auth:/usr/src/app
+
+    ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
+    blogwatcher:
+        volumes:
+            - ./blogWatcher/app:/usr/src/app
+
+    ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
+    blogbuilder:
+        volumes:
+            - ./blogBuilder/app:/usr/src/app
+            - ./dist:/usr/src/app/dist
+
+networks:
+    default:
+        external:
+            name: gateway_network
