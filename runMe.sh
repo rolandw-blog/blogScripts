@@ -16,3 +16,4 @@ root=`pwd -P`
 ln -s "$root/docker/development.yaml" ../development.yaml
 ln -s "$root/docker/production.yaml" ../production.yaml
 ln -s "$root/docker/docker-compose.yaml" ../docker-compose.yaml
+ln -s "$root/docker/.dockerignore" ../.dockerignore
