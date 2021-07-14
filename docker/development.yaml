@@ -1,33 +1,42 @@
-version: "3"
+version: "3.1"
 services:
-    auth:
-        volumes:
-            - ./auth:/usr/src/app
+    # auth:
+    #     volumes:
+    #         - ./auth:/usr/src/app
 
     ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
     blogwatcher:
+        stdin_open: true # docker run -i
+        tty: true # docker run -t
         volumes:
-            - ./blogWatcher/app:/usr/src/app
+            - ./blogWatcher:/usr/src/app
+            - blogwatcher_dev_node_modules:/usr/src/app/node_modules # prevents host node_modules getting mounted
+        ports:
+            - "3000:3001" # publish ports to the host
 
-    ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
-    blogbuilder:
+    management:
+        build:
+            context: ./managementUI
+            dockerfile: dockerfile
+        stdin_open: true # https://github.com/facebook/create-react-app/issues/8688
+        container_name: management_dev
+        expose:
+            - "4000"
         volumes:
-            - ./blogBuilder/app:/usr/src/app
-            - ./dist:/usr/src/app/dist
+            - ./managementUI/frontend:/usr/src/app
+            - management_ui_dev_node_modules:/usr/src/app/node_modules
 
-    # ? Generally i start managementUI separately through its own docker-compose.yaml
-    # ?     This is so it can be restarted independently from the rest of the services
-    # ?     If you want to run it alongside with the rest of the development containers, then uncomment below
-    # management:
-    #     build:
-    #         context: ./managementUI
-    #         dockerfile: dockerfile.dev
-    #     stdin_open: true # https://github.com/facebook/create-react-app/issues/8688
-    #     container_name: management_dev
-    #     expose:
-    #         - "4000"
-    #     volumes:
-    #         - ./managementUI/frontend/src:/usr/src/app/src
+# prevents the node_modules from being mapped to the host
+# https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
+volumes:
+    blogwatcher_dev_node_modules:
+        external: true
+    blog_content:
+        external: true
+    blog_nginx_proxy_certs:
+        external: true
+    management_ui_dev_node_modules:
+        external: true
 
 networks:
     default:

@@ -1,51 +1,70 @@
-version: "3"
+version: "3.1"
 services:
-    auth:
-        build: ./auth
-        container_name: authentication
-        expose:
-            - "8080"
+    # auth:
+    #     build: ./auth
+    #     container_name: authentication
+    #     expose:
+    #         - "8080"
+
+    gateway:
+        container_name: blog_nginx_proxy
+        image: blog_nginx_proxy
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - blog_content:/usr/share/nginx/html/dist
+            - blog_nginx_proxy_certs:/etc/letsencrypt/live/localhost
 
     ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
-    # blogwatcher api
     blogwatcher:
-        build: ./blogWatcher
         container_name: blogwatcher
-        expose:
-            - "3001"
+        image: blogwatcher:latest
+        build:
+            context: ./blogWatcher
+            dockerfile: dockerfile
         environment:
             - PORT=3001
+        expose:
+            - "3001" # expose ports to other containers within the docker network
 
-    # blogwatcher api database
-    mongo:
-        container_name: blogwatcher_database
-        image: mongo
+    blogwatcher_database:
+        container_name: blogwatcher_database # `docker-compose up` will name the container this name
+        image: blogwatcher_database # `docker-compose build` will tag the container with this name
+        build:
+            context: ./blogWatcher/database
+            dockerfile: dockerfile
         environment:
             # back up admin user in case something goes wrong
-            - MONGO_INITDB_DATABASE=imageHost
-            - MONGO_INITDB_ROOT_USERNAME=admin
-            - MONGO_INITDB_ROOT_PASSWORD=rhinos
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: rhinos
         volumes:
-            # For the startup script that mongo runs to create a new user
-            - ./blogWatcher/app/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
             # Store the mongo database on the host to make it persistent between container restarts
-            - ./blogWatcher/mongo-volume:/data/db
+            - blogwatcher_database:/data/db
         ports:
             - "27017:27017"
         expose:
             - 27017
-        command: mongod --auth --quiet
         logging:
             driver: none
 
     ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
-    blogbuilder:
-        build: ./blogBuilder
-        container_name: blogbuilder
-        environment:
-            - PORT=3002
-        ports:
-            - "9229:9229"
+    # blogbuilder:
+    #     build: ./blogBuilder
+    #     container_name: blogbuilder
+    #     environment:
+    #         - PORT=3002
+    #     ports:
+    #         - "9229:9229"
+
+# Using `external: true` causes docker to complain if the volume does not exist
+volumes:
+    blogwatcher_database:
+        external: true
+    blog_content:
+        external: true
+    blog_nginx_proxy_certs:
+        external: true
 
 networks:
     default:
