@@ -1,0 +1,20 @@
+// Dark
+$theme: "blue";
+
+// colors
+$lightest: #e0e0e0;
+$darkest: #494f5c;
+$dark: #343434;
+$light: #787878;
+$light2: #c1c1c1;
+
+// special
+$mainBackground: $darkest;
+
+:root {
+	--bg-color: #494f5c;
+	--bg-accent: #c1c1c1;
+	--code-block-bg: #000000;
+	--fonts: "sans serif", "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Verdana, sans-serif;
+}

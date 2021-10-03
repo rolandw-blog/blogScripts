@@ -1,4 +1,4 @@
-version: "3.1"
+version: "3.4"
 services:
     # auth:
     #     build: ./auth
@@ -8,23 +8,28 @@ services:
 
     gateway:
         container_name: blog_nginx_proxy
-        image: blog_nginx_proxy
+        depends_on:
+            - blogwatcher_database
+            - blogwatcher
         ports:
             - "80:80"
             - "443:443"
         volumes:
             - blog_content:/usr/share/nginx/html/dist
-            - blog_nginx_proxy_certs:/etc/letsencrypt/live/localhost
+            # - blog_nginx_proxy_certs:/etc/letsencrypt/live/localhost
 
     ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
     blogwatcher:
         container_name: blogwatcher
         image: blogwatcher:latest
+        depends_on:
+            - blogwatcher_database
         build:
             context: ./blogWatcher
             dockerfile: dockerfile
         environment:
             - PORT=3001
+            - API_SERVICE=/api/v1/watch
         expose:
             - "3001" # expose ports to other containers within the docker network
 
@@ -49,6 +54,22 @@ services:
             driver: none
 
     ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
+    blogbuilder:
+        container_name: blogbuilder
+        image: blogbuilder:latest
+        depends_on:
+            - blogwatcher
+        build:
+            context: ./blogBuilder
+            dockerfile: dockerfile
+        volumes:
+            - blog_content:/data
+        environment:
+            - PORT=3001
+            - API_SERVICE=/api/v1/build
+        expose:
+            - "3001" # expose ports to other containers within the docker network
+
     # blogbuilder:
     #     build: ./blogBuilder
     #     container_name: blogbuilder

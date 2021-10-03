@@ -1,7 +1,26 @@
-version: "3"
+version: "3.4"
 services:
-    ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
-    blogbuilder:
+    gateway:
+        build:
+            context: ./nginxProxy
+            dockerfile: dockerfile
+            target: production
         volumes:
-            # Mount the output from the container to => the dist folder
-            - ./dist:/usr/src/app/dist
+            - blog_content:/usr/share/nginx/html
+            - ./nginxProxy/keys/production:/etc/letsencrypt/live/
+
+    blogwatcher:
+        build:
+            context: ./blogWatcher
+            dockerfile: dockerfile
+            target: production
+
+    blogbuilder:
+        build:
+            context: ./blogBuilder
+            dockerfile: dockerfile
+            target: production
+
+volumes:
+    blog_content:
+        external: true

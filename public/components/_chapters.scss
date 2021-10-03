@@ -1,0 +1,15 @@
+article {
+	counter-reset: h1 1 h2 0 h3 0;
+}
+
+h1 {
+	counter-increment: h1;
+	counter-reset: h2;
+}
+
+h2 {
+	counter-increment: h2;
+	&:before {
+		content: counter(h1) "." counter(h2) " ";
+	}
+}

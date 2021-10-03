@@ -18,3 +18,10 @@ The final file structure should look something like this:
 ├── production.yaml       => (SYMLINK) start the blog with production options
 └── docker-compose.yaml   => (SYMLINK) start the blog. Combine with one of the above
 ```
+
+To work on public asset stuff, cd into public and run the following command to watch your sass files.
+
+```none
+cd ./public
+nodemon -e scss --exec node-sass -r -o ./css .
+```

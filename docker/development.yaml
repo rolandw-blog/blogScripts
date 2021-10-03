@@ -1,35 +1,58 @@
-version: "3.1"
+version: "3.4"
 services:
     # auth:
     #     volumes:
     #         - ./auth:/usr/src/app
 
+    gateway:
+        build:
+            context: ./nginxProxy
+            dockerfile: dockerfile
+            target: development
+
     ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
     blogwatcher:
         stdin_open: true # docker run -i
         tty: true # docker run -t
+        build:
+            target: development # uses the dockerfile stage name
         volumes:
             - ./blogWatcher:/usr/src/app
-            - blogwatcher_dev_node_modules:/usr/src/app/node_modules # prevents host node_modules getting mounted
+            # - blogwatcher_dev_node_modules:/usr/src/app/node_modules # prevents host node_modules getting mounted
         ports:
             - "3000:3001" # publish ports to the host
 
-    management:
+    ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
+    blogbuilder:
+        stdin_open: true # docker run -i
+        tty: true # docker run -t
         build:
-            context: ./managementUI
-            dockerfile: dockerfile
-        stdin_open: true # https://github.com/facebook/create-react-app/issues/8688
-        container_name: management_dev
-        expose:
-            - "4000"
+            target: development # uses the dockerfile stage name
         volumes:
-            - ./managementUI/frontend:/usr/src/app
-            - management_ui_dev_node_modules:/usr/src/app/node_modules
+            - ./blogBuilder:/usr/src/app
+            - blogbuilder_dev_node_modules:/usr/src/app/node_modules # prevents host node_modules getting mounted
+        ports:
+            - "2000:2000" # publish ports to the host
+
+    # ! out of action for now because it crashes
+    # management:
+    #     build:
+    #         context: ./managementUI
+    #         dockerfile: dockerfile
+    #     stdin_open: true # https://github.com/facebook/create-react-app/issues/8688
+    #     container_name: management_dev
+    #     expose:
+    #         - "4000"
+    #     volumes:
+    #         - ./managementUI/frontend:/usr/src/app
+    #         - management_ui_dev_node_modules:/usr/src/app/node_modules
 
 # prevents the node_modules from being mapped to the host
 # https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
 volumes:
     blogwatcher_dev_node_modules:
+        external: true
+    blogbuilder_dev_node_modules:
         external: true
     blog_content:
         external: true
