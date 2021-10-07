@@ -6,17 +6,18 @@ services:
     #     expose:
     #         - "8080"
 
-    gateway:
+    blog_nginx_proxy:
         container_name: blog_nginx_proxy
-        depends_on:
-            - blogwatcher_database
-            - blogwatcher
+        image: blog_nginx_proxy:latest
+        build:
+            context: ./nginxProxy
+            dockerfile: dockerfile
         ports:
             - "80:80"
             - "443:443"
         volumes:
             - blog_content:/usr/share/nginx/html/dist
-            # - blog_nginx_proxy_certs:/etc/letsencrypt/live/localhost
+        restart: unless-stopped
 
     ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
     blogwatcher:
@@ -32,6 +33,7 @@ services:
             - API_SERVICE=/api/v1/watch
         expose:
             - "3001" # expose ports to other containers within the docker network
+        restart: unless-stopped
 
     blogwatcher_database:
         container_name: blogwatcher_database # `docker-compose up` will name the container this name
@@ -52,6 +54,7 @@ services:
             - 27017
         logging:
             driver: none
+        restart: unless-stopped
 
     ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
     blogbuilder:
@@ -69,6 +72,7 @@ services:
             - API_SERVICE=/api/v1/build
         expose:
             - "3001" # expose ports to other containers within the docker network
+        restart: unless-stopped
 
     # blogbuilder:
     #     build: ./blogBuilder

@@ -4,11 +4,14 @@ services:
     #     volumes:
     #         - ./auth:/usr/src/app
 
-    gateway:
+    blog_nginx_proxy:
         build:
             context: ./nginxProxy
             dockerfile: dockerfile
             target: development
+        volumes:
+            - blog_content:/usr/share/nginx/html
+            - blog_nginx_proxy_certs:../nginxProxy/keys/development
 
     ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
     blogwatcher:

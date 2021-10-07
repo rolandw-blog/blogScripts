@@ -37,54 +37,56 @@ echo "Creating blog containers"
 /usr/bin/docker volume create --name=blogwatcher_dev_node_modules
 /usr/bin/docker volume create --name=management_ui_dev_node_modules
 /usr/bin/docker volume create --name=blog_nginx_proxy_certs
-# /usr/bin/docker volume create --name=blog_nginx_sites_enabled
 echo "done ================================================"
 
 sleep 1
 
 echo "Moving static content to blog_content volume"
-# Make dist and static directory
-/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine mkdir /html/static # make static directory
-/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine mkdir /html/dist
+# Make dist directory inside the blog_content volume
+/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine mkdir /html/static
 
 # Move placeholder index.html to dist
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine
-TMP=$(mktemp)
-echo "temp" >$TMP
-/usr/bin/docker cp $TMP temp_container:/html/dist/index.html
+if [ $BLOG_ENV = "development" ]; then
+    /usr/bin/docker cp ../nginxProxy/html/landing_development/index.html temp_container:/html
+else
+    /usr/bin/docker cp ../nginxProxy/html/landing_production/index.html temp_container:/html
+fi
 /usr/bin/docker rm temp_container
 
 # Copy favicon and logo to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine
 /usr/bin/docker cp ../nginxProxy/html/favicon.ico temp_container:/html/
-/usr/bin/docker cp ../nginxProxy/html/logo.png temp_container:/html/
 /usr/bin/docker rm temp_container
 
-# Copy styles and essential js to root
+# Copy styles to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine
-# media
-/usr/bin/docker cp ./public/media/logo.png temp_container:/html/
-/usr/bin/docker cp ./public/media/github.svg temp_container:/html/
-/usr/bin/docker cp ./public/media/twitter.svg temp_container:/html/
-/usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/
-# js
-/usr/bin/docker cp ./public/js/index.js temp_container:/html/
-# css
 /usr/bin/docker cp ./public/css/home.css temp_container:/html/
 /usr/bin/docker cp ./public/css/menu.css temp_container:/html/
 /usr/bin/docker cp ./public/css/solarized.css temp_container:/html/
 /usr/bin/docker cp ./public/css/tiny_dark.css temp_container:/html/
 /usr/bin/docker cp ./public/css/tiny_light.css temp_container:/html/
-/usr/bin/docker cp ./public/css/.css temp_container:/html/
-/usr/bin/docker cp ./public/css/.css temp_container:/html/
-/usr/bin/docker cp ./public/css/.css temp_container:/html/
 /usr/bin/docker cp ./public/css/base temp_container:/html/
+/usr/bin/docker rm temp_container
+# Copy javascript to root
+/usr/bin/docker create --name temp_container -v blog_content:/html alpine
+/usr/bin/docker cp ./public/js/index.js temp_container:/html/
+/usr/bin/docker rm temp_container
+# Copy media to root
+/usr/bin/docker create --name temp_container -v blog_content:/html alpine
+/usr/bin/docker cp ./public/media/logo.png temp_container:/html/
+/usr/bin/docker cp ./public/media/github.svg temp_container:/html/
+/usr/bin/docker cp ./public/media/twitter.svg temp_container:/html/
+/usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/
 /usr/bin/docker rm temp_container
 
 # Fix ownership issues from copying files in and stuff
-/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine chown -R root:root /html/                # fix ownership from 1000:1000 to root:root
-/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine find /html -type f -exec chmod 777 {} \; # change to -rwxrwxrwx for all files
-/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine find /html -type d -exec chmod 777 {} \; # change to -rwxrwxrwx for all directories
+# fix ownership from 1000:1000 to root:root
+/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine chown -R root:root /html/
+# change to -rwxrwxrwx for all files
+/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine find /html -type f -exec chmod 777 {} \;
+# change to -rwxrwxrwx for all directories
+/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine find /html -type d -exec chmod 777 {} \;
 
 sleep 1
 

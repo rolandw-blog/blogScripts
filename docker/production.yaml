@@ -1,13 +1,13 @@
 version: "3.4"
 services:
-    gateway:
+    blog_nginx_proxy:
         build:
             context: ./nginxProxy
             dockerfile: dockerfile
             target: production
         volumes:
             - blog_content:/usr/share/nginx/html
-            - ./nginxProxy/keys/production:/etc/letsencrypt/live/
+            - blog_nginx_proxy_certs:/etc/letsencrypt/live
 
     blogwatcher:
         build:
@@ -19,7 +19,6 @@ services:
         build:
             context: ./blogBuilder
             dockerfile: dockerfile
-            target: production
 
 volumes:
     blog_content:
