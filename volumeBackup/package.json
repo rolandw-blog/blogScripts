@@ -1,0 +1,30 @@
+{
+	"name": "blogscripts",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "Scripts n stuff to manage the blog containers.",
+	"main": "runMe.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/rolandw-blog/blogscripts.git"
+	},
+	"keywords": [],
+	"author": "rolandwarburton <warburtonroland@gmail.com>",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/rolandw-blog/blogscripts/issues"
+	},
+	"homepage": "https://github.com/rolandw-blog/blogscripts#readme",
+	"dependencies": {
+		"@types/dockerode": "^3.2.7",
+		"dockerode": "^3.3.1",
+		"typescript": "^4.4.3",
+		"yargs": "^17.2.1"
+	},
+	"devDependencies": {
+		"@types/yargs": "^17.0.3"
+	}
+}
