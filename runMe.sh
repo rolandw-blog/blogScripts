@@ -66,6 +66,7 @@ fi
 /usr/bin/docker cp ./public/css/solarized.css temp_container:/html/
 /usr/bin/docker cp ./public/css/tiny_dark.css temp_container:/html/
 /usr/bin/docker cp ./public/css/tiny_light.css temp_container:/html/
+/usr/bin/docker cp ./public/css/an-old-hope.css temp_container:/html/
 /usr/bin/docker cp ./public/css/base temp_container:/html/
 /usr/bin/docker rm temp_container
 # Copy javascript to root
