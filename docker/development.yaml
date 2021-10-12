@@ -11,7 +11,7 @@ services:
             target: development
         volumes:
             - blog_content:/usr/share/nginx/html
-            - blog_nginx_proxy_certs:../nginxProxy/keys/development
+            - ./nginxProxy/keys/development:/etc/letsencrypt/live/
 
     ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
     blogwatcher:
