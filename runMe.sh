@@ -13,8 +13,17 @@
 
 if [ -z "$BLOG_ENV" ]; then
       echo "Please set \$BLOG_ENV environment variable to \"production\" or \"development\""
+      echo "If using a staging server then set \$BLOG_ENV to production"
       return 1
 fi
+
+if [ -z "$BLOG_CERT_DIR" ]; then
+      echo "Please set \$BLOG_CERT_DIR environment variable to the directory that your Lets Encrypt or self signed certificates exist."
+      echo "\tFor example to deploy development: \033[1mexport BLOG_CERT_DIR=\"../nginxProxy/keys/development\"\033[0m"
+      echo "\tFor example to deploy production: \033[1mexport BLOG_CERT_DIR=\"/etc/letsencrypt/live/example.rolandw.dev\"\033[0m"
+      return 1
+fi
+
 
 # Link the docker files to spin up the blog to the parent directory
 echo "Linking docker compose scripts to root of blog..."
@@ -80,7 +89,11 @@ fi
 /usr/bin/docker cp ./public/media/twitter.svg temp_container:/html/
 /usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/
 /usr/bin/docker rm temp_container
+echo "done ================================================"
 
+sleep 1
+
+echo "Fixing file ownership in blog_content volume"
 # Fix ownership issues from copying files in and stuff
 # fix ownership from 1000:1000 to root:root
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine chown -R root:root /html/
@@ -88,20 +101,66 @@ fi
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine find /html -type f -exec chmod 777 {} \;
 # change to -rwxrwxrwx for all directories
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine find /html -type d -exec chmod 777 {} \;
+echo "done ================================================"
 
 sleep 1
 
-# echo "Moving certificates to blog_nginx_proxy_certs volume"
-# /usr/bin/docker create --name temp_container -v blog_nginx_proxy_certs:/keys alpine
-# if [ $BLOG_ENV = "development" ]; then
-#     /usr/bin/docker cp ../nginxProxy/keys/development/. temp_container:/keys
-# else
-#     /usr/bin/docker cp ../nginxProxy/keys/production/. temp_container:/keys
-# fi
-# /usr/bin/docker rm temp_container
-# echo "done ================================================"
+echo "Moving certificates to blog_nginx_proxy_certs volume"
+# the cert folder could container
+# cert.pem
+# chain.pem
+# fullchain.pem
+# privkey.pem
 
-# sleep 1
+FILES=$(sudo find $BLOG_CERT_DIR -name "*.pem")
+for d in $FILES ; do
+    # resolve the symlink because letsencrypt uses symlinks to point to active certs
+    SOURCE=$(sudo realpath $d)
+    FILENAME=$(basename $SOURCE)
+
+    # copy the cert file to the volume
+    /usr/bin/docker create --name temp_container -v "blog_nginx_proxy_certs:/keys" alpine
+    sudo /usr/bin/docker cp -L "$SOURCE" temp_container:/keys
+    /usr/bin/docker rm temp_container
+    echo "Copied $FILENAME to blog_nginx_proxy_certs"
+
+
+    # the cert copies over as cert1.pem not cert.pem so i create a symlink cert.pem to point to it
+    echo "installing symlink to $FILENAME"
+
+    if [ "$FILENAME" != "cert.pem" ]; then
+        if echo "$FILENAME" | grep -q "cert"; then
+            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME.pem" "/keys/cert.pem"
+        fi
+    fi
+
+    if [ "$FILENAME" != "chain.pem" ]; then
+        if echo "$FILENAME" | grep -q "chain"; then
+            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME.pem" "/keys/chain.pem"
+        fi
+    fi
+
+    if [ "$FILENAME" != "fullchain.pem" ]; then
+        if echo "$FILENAME" | grep -q "fullchain"; then
+            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME.pem" "/keys/fullchain.pem"
+        fi
+    fi
+
+    if [ "$FILENAME" != "privkey.pem" ]; then
+        if echo "$FILENAME" | grep -q "privkey"; then
+            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME.pem" "/keys/privkey.pem"
+        fi
+    fi
+done
+echo "done ================================================"
+
+sleep 1
+
+echo "Creating gateway_network"
+/usr/bin/docker network create gateway_network
+echo "done ================================================"
+
+sleep 1
 
 # echo "Moving nginx configs to blog_nginx_sites_enabled volume"
 # /usr/bin/docker create --name temp_container -v blog_nginx_sites_enabled:/data alpine
