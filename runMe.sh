@@ -130,25 +130,25 @@ for d in $FILES ; do
 
     if [ "$FILENAME" != "cert.pem" ]; then
         if echo "$FILENAME" | grep -q "cert"; then
-            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME.pem" "/keys/cert.pem"
+            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/cert.pem"
         fi
     fi
 
     if [ "$FILENAME" != "chain.pem" ]; then
         if echo "$FILENAME" | grep -q "chain"; then
-            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME.pem" "/keys/chain.pem"
+            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/chain.pem"
         fi
     fi
 
     if [ "$FILENAME" != "fullchain.pem" ]; then
         if echo "$FILENAME" | grep -q "fullchain"; then
-            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME.pem" "/keys/fullchain.pem"
+            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/fullchain.pem"
         fi
     fi
 
     if [ "$FILENAME" != "privkey.pem" ]; then
         if echo "$FILENAME" | grep -q "privkey"; then
-            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME.pem" "/keys/privkey.pem"
+            docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/privkey.pem"
         fi
     fi
 done
