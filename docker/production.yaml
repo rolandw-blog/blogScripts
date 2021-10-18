@@ -7,7 +7,7 @@ services:
             target: production
         volumes:
             - blog_content:/usr/share/nginx/html
-            - blog_nginx_proxy_certs:/etc/letsencrypt/live
+            - blog_nginx_proxy_certs:/keys
 
     blogwatcher:
         build:
