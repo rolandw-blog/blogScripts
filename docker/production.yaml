@@ -6,7 +6,6 @@ services:
             dockerfile: dockerfile
             target: production
         volumes:
-            - blog_content:/usr/share/nginx/html
             - blog_nginx_proxy_certs:/keys
 
     blogwatcher:
