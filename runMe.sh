@@ -57,21 +57,21 @@ echo "Moving static content to blog_content volume"
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine mkdir /html/static
 
 # Move placeholder index.html to dist
-/usr/bin/docker create --name temp_container -v blog_content:/html alpine
+/usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 if [ $BLOG_ENV = "development" ]; then
     /usr/bin/docker cp ./public/html/landing_development/index.html temp_container:/html
 else
     /usr/bin/docker cp ./public/html/html/landing_production/index.html temp_container:/html
 fi
-/usr/bin/docker rm temp_container
+/usr/bin/docker rm temp_container >/dev/null
 
 # Copy favicon and logo to root
-/usr/bin/docker create --name temp_container -v blog_content:/html alpine
+/usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 /usr/bin/docker cp ../nginxProxy/html/favicon.ico temp_container:/html/
-/usr/bin/docker rm temp_container
+/usr/bin/docker rm temp_container >/dev/null
 
 # Copy styles to root
-/usr/bin/docker create --name temp_container -v blog_content:/html alpine
+/usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 /usr/bin/docker cp ./public/css/home.css temp_container:/html/
 /usr/bin/docker cp ./public/css/menu.css temp_container:/html/
 /usr/bin/docker cp ./public/css/solarized.css temp_container:/html/
@@ -79,18 +79,18 @@ fi
 /usr/bin/docker cp ./public/css/tiny_light.css temp_container:/html/
 /usr/bin/docker cp ./public/css/an-old-hope.css temp_container:/html/
 /usr/bin/docker cp ./public/css/base temp_container:/html/
-/usr/bin/docker rm temp_container
+/usr/bin/docker rm temp_container >/dev/null
 # Copy javascript to root
-/usr/bin/docker create --name temp_container -v blog_content:/html alpine
+/usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 /usr/bin/docker cp ./public/js/index.js temp_container:/html/
-/usr/bin/docker rm temp_container
+/usr/bin/docker rm temp_container >/dev/null
 # Copy media to root
-/usr/bin/docker create --name temp_container -v blog_content:/html alpine
+/usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 /usr/bin/docker cp ./public/media/logo.png temp_container:/html/
 /usr/bin/docker cp ./public/media/github.svg temp_container:/html/
 /usr/bin/docker cp ./public/media/twitter.svg temp_container:/html/
 /usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/
-/usr/bin/docker rm temp_container
+/usr/bin/docker rm temp_container >/dev/null
 echo "done ================================================"
 
 sleep 1
