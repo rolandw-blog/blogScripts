@@ -27,6 +27,9 @@ fi
 echo "BLOG_ENV: $BLOG_ENV"
 echo "BLOG_CERT_DIR: $BLOG_CERT_DIR"
 
+# add an empty line
+echo ""
+
 # Link the docker files to spin up the blog to the parent directory
 echo "Linking docker compose scripts to root of blog..."
 root=$(pwd -P)
@@ -211,12 +214,3 @@ sleep 0.25
 
 # /usr/bin/docker rm management_ui_build_container
 # echo "[COMPLETE]\n"
-
-# sleep 0.25
-
-# ! Depricated because the blog should not handle non TLD requests
-# move non blog index pages to blog_content volume
-# /usr/bin/docker create --name temp_container -v blog_content:/html alpine
-# /usr/bin/docker cp ../nginxProxy/html/landing_development temp_container:/html
-# /usr/bin/docker cp ../nginxProxy/html/landing_production temp_container:/html
-# /usr/bin/docker rm temp_container
