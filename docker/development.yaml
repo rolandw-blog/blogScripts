@@ -10,8 +10,7 @@ services:
             dockerfile: dockerfile
             target: development
         volumes:
-            - blog_content:/usr/share/nginx/html
-            - ./nginxProxy/keys/development:/etc/letsencrypt/live/
+            - blog_nginx_proxy_certs:/keys
 
     ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
     blogwatcher:

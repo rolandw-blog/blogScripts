@@ -1,0 +1,57 @@
+==================================================================
+https://keybase.io/rolandwarburton
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://rolandw.dev
+  * I am rolandwarburton (https://keybase.io/rolandwarburton) on keybase.
+  * I have a public key ASDK5FUTa-FuO4-tTPmY1MZJMF6-EtC7iG29XCScngoIRQo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0120cae455136be16e3b8fad4cf998d4c649305ebe12d0bb886dbd5c249c9e0a08450a",
+      "host": "keybase.io",
+      "kid": "0120cae455136be16e3b8fad4cf998d4c649305ebe12d0bb886dbd5c249c9e0a08450a",
+      "uid": "d5dc8c1e63a7eaa890b8bbc685d30019",
+      "username": "rolandwarburton"
+    },
+    "merkle_root": {
+      "ctime": 1618739206,
+      "hash": "5a6be09cf546a404db65455845c84abe8080e9bbe432a5e31022aed6022316807292fac284e9bc4ea19e88dba41f4f4f7dbd248905b463780cf5bc67fbba2f1b",
+      "hash_meta": "5b93c04444933803bba483033b2594441c0d66258f106232ec2cc6d1b1a1153f",
+      "seqno": 19665525
+    },
+    "service": {
+      "entropy": "GYxASP/1F1f4TrNqWrrGTHb6",
+      "hostname": "rolandw.dev",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "5.6.1"
+  },
+  "ctime": 1618739233,
+  "expire_in": 504576000,
+  "prev": "90f21d3912956dbfa47d814b6e868a6f6caaa412e15099b43679d4e0348e9a90",
+  "seqno": 7,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgyuRVE2vhbjuPrUz5mNTGSTBevhLQu4htvVwknJ4KCEUKp3BheWxvYWTESpcCB8QgkPIdORKVbb+kfYFLboaKb2yqpBLhUJm0NnnU4DSOmpDEIIbfZGkpNHsXvX8ex28z+qi9RNylhPjBPzOhQsopzcyNAgHCo3NpZ8RApnBh7jcP7qVk7h8cZscmewr8svRQyemfcnpoGzSehoms/IiiFl2g2ZXRH+lbwXPLRte8oD4NXMUF2Ok1P4qPAahzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIPPuRBZX6P4VdVYEZsPpX1z58gdfAef00sqvGM3ugeJso3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/rolandwarburton
+
+==================================================================
+
