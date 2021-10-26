@@ -75,12 +75,13 @@ fi
 
 # Copy styles to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
-/usr/bin/docker cp ./public/css/menu.css temp_container:/html/
-/usr/bin/docker cp ./public/css/solarized.css temp_container:/html/
-/usr/bin/docker cp ./public/css/tiny_dark.css temp_container:/html/
-/usr/bin/docker cp ./public/css/tiny_light.css temp_container:/html/
-/usr/bin/docker cp ./public/css/an-old-hope.css temp_container:/html/
-/usr/bin/docker cp ./public/css/base temp_container:/html/
+/usr/bin/docker exec temp_container mkdir /html/static
+/usr/bin/docker cp ./public/css/menu.css temp_container:/html/static
+/usr/bin/docker cp ./public/css/solarized.css temp_container:/html/static
+/usr/bin/docker cp ./public/css/tiny_dark.css temp_container:/html/static
+/usr/bin/docker cp ./public/css/tiny_light.css temp_container:/html/static
+/usr/bin/docker cp ./public/css/an-old-hope.css temp_container:/html/static
+/usr/bin/docker cp ./public/css/base temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
 # Copy javascript to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
@@ -99,12 +100,13 @@ sleep 0.25
 
 echo "[STEP]\t Fixing file ownership in blog_content volume"
 # Fix ownership issues from copying files in and stuff
-# fix ownership from 1000:1000 to root:root
-/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine chown -R root:root /html/
-# change to -rwxrwxrwx for all files
-/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine find /html -type f -exec chmod 777 {} \;
-# change to -rwxrwxrwx for all directories
-/usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine find /html -type d -exec chmod 777 {} \;
+# fix ownership to be node:node
+# 1. Create a build of the nginxProxy container which has the node user and group
+docker build -t fix_ownership_container -f ../nginxProxy/dockerfile ../nginxProxy
+# 2. Using the image we just made, chown all the stuff
+/usr/bin/docker run --rm --name temp_container -v blog_content:/html fix_ownership_container chown -R node:node /html
+# 777 all that stuff (for now)
+/usr/bin/docker run --rm --name temp_container -v blog_content:/html fix_ownership_container chmod 777 -R /html
 echo "[COMPLETE]\n"
 
 sleep 0.25
