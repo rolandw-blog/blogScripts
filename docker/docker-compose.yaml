@@ -91,6 +91,7 @@ volumes:
     blog_nginx_proxy_certs:
         external: true
 
+# default all these containers to be on the gateway_network
 networks:
     default:
         external:

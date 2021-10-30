@@ -23,6 +23,9 @@ services:
             # - blogwatcher_dev_node_modules:/usr/src/app/node_modules # prevents host node_modules getting mounted
         ports:
             - "3000:3001" # publish ports to the host
+        networks:
+            gateway_network:
+                ipv4_address: 172.22.0.102
 
     ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
     blogbuilder:
@@ -35,6 +38,9 @@ services:
             - blogbuilder_dev_node_modules:/usr/src/app/node_modules # prevents host node_modules getting mounted
         ports:
             - "2000:2000" # publish ports to the host
+        networks:
+            gateway_network:
+                ipv4_address: 172.22.0.101
 
     # ! out of action for now because it crashes
     # management:
@@ -64,6 +70,5 @@ volumes:
         external: true
 
 networks:
-    default:
-        external:
-            name: gateway_network
+    gateway_network:
+        external: true
