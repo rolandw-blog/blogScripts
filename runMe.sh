@@ -89,10 +89,10 @@ fi
 /usr/bin/docker rm temp_container >/dev/null
 # Copy media to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
-/usr/bin/docker cp ./public/media/logo.png temp_container:/html/
-/usr/bin/docker cp ./public/media/github.svg temp_container:/html/
-/usr/bin/docker cp ./public/media/twitter.svg temp_container:/html/
-/usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/
+/usr/bin/docker cp ./public/media/logo.png temp_container:/html/static
+/usr/bin/docker cp ./public/media/github.svg temp_container:/html/static
+/usr/bin/docker cp ./public/media/twitter.svg temp_container:/html/static
+/usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
 echo "[COMPLETE]\n"
 
