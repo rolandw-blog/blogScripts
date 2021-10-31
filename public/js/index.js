@@ -6,13 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		socialBox.className = "socialBox";
 
 		socialBox.appendChild(
-			createSocialIcon("/twitter.svg", "https://twitter.com/RolandIRL")
+			createSocialIcon("/static/twitter.svg", "https://twitter.com/RolandIRL")
 		);
 		socialBox.appendChild(
-			createSocialIcon("/linkedin.svg", "https://www.linkedin.com/in/roland-w/")
+			createSocialIcon("/static/linkedin.svg", "https://www.linkedin.com/in/roland-w/")
 		);
 		socialBox.appendChild(
-			createSocialIcon("/github.svg", "https://github.com/RolandWarburton")
+			createSocialIcon("/static/github.svg", "https://github.com/RolandWarburton")
 		);
 
 		// get the little spinny logo thing

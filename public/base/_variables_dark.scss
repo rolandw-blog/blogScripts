@@ -1,9 +1,10 @@
-@import "./variables";
+$bg-color: #252728;
+$bg-accent: black;
+$font-color: #f6f6fa;
+$font-accent1: #bd93f9;
+$font-accent2: #44475a;
+$font-accent3: #50fa7b;
+$code-block-bg: #000000;
 
-:root {
-	--bg-color: #252728;
-	--bg-accent: #f6f6fa;
-	--code-block-bg: #000000;
-	--fonts: "sans serif", "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-		"Lucida Sans Unicode", Verdana, sans-serif;
-}
+$fonts: "sans serif", "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode",
+	Verdana, sans-serif;

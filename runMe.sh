@@ -85,7 +85,7 @@ fi
 /usr/bin/docker rm temp_container >/dev/null
 # Copy javascript to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
-/usr/bin/docker cp ./public/js/index.js temp_container:/html/
+/usr/bin/docker cp ./public/js/index.js temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
 # Copy media to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null

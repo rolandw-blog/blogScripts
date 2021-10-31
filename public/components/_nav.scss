@@ -1,0 +1,53 @@
+nav {
+	// The nav is a desktop only component (for now)
+	@include mobile {
+		display: none;
+	}
+
+	padding: 2.5em;
+
+	background-color: $bg-color;
+	color: $font-color;
+
+	// width: clamp(200px, 35ch, 20%);
+	width: 15vw;
+	min-width: 200px;
+	section {
+		padding-bottom: 1em;
+	}
+
+	@include tablet {
+		padding: 1em;
+	}
+}
+
+.nav-subsection {
+	margin: 0.5ch 0;
+}
+
+.nav-bottom {
+	margin-top: auto;
+}
+
+.breadCrumbs {
+	word-wrap: break-word;
+}
+
+.bread-crumb-nav-slash {
+	color: $font-color;
+}
+
+// organize the prev and next nav links
+.nav-link {
+	color: #ffffff;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	span {
+		display: inline;
+	}
+}
+
+// #nav-bottom {
+// 	position: absolute;
+// 	bottom: 0;
+// }

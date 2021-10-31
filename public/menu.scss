@@ -1,4 +1,5 @@
 @import "base/mixins";
+@import "base/variables_solarized";
 @import "base/variables";
 
 * {
@@ -11,4 +12,27 @@
 body {
 	background-color: $dark;
 	color: $light;
+}
+
+#list-menu {
+	font-size: 1.5rem;
+}
+
+#list-menu a {
+	text-decoration: none;
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+a,
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	color: $font-color;
 }
