@@ -12,4 +12,4 @@ function ctrl_c() {
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine
 
 # every time the file is saved on the host, render the scss to css and copy to the volume
-nodemon -e scss --exec 'node-sass -r -o ./dist . && for f in ./dist/*; do /usr/bin/docker cp "$f" temp_container:/html/static; done'
+nodemon -e scss --exec 'node-sass -r -o ./css . && for f in ./css/*; do /usr/bin/docker cp "$f" temp_container:/html/static; done'
