@@ -75,7 +75,6 @@ fi
 
 # Copy styles to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
-/usr/bin/docker exec temp_container mkdir /html/static
 /usr/bin/docker cp ./public/css/menu.css temp_container:/html/static
 /usr/bin/docker cp ./public/css/solarized.css temp_container:/html/static
 /usr/bin/docker cp ./public/css/tiny_dark.css temp_container:/html/static
