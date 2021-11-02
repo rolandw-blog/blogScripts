@@ -124,52 +124,34 @@ for d in $FILES; do
     FILENAME=$(basename $SOURCE)
 
     # copy the cert file to the volume
-    /usr/bin/docker create --name temp_container -v "blog_nginx_proxy_certs:/keys" alpine >/dev/null
+    /usr/bin/docker create --name temp_container -v "blog_nginx_proxy_certs:/keys" alpine
     sudo /usr/bin/docker cp -L "$SOURCE" temp_container:/keys
-    /usr/bin/docker rm temp_container >/dev/null
+    /usr/bin/docker rm temp_container
     echo "Copied $FILENAME to blog_nginx_proxy_certs"
 
+
     # the cert copies over as cert1.pem not cert.pem so i create a symlink cert.pem to point to it
-    # echo "installing symlink to $FILENAME"
-
-    # check if the name is already correct (no need to symlink)
-    if [ "$FILENAME" != "cert.pem" ]; then
-        continue
-    fi
-
-    if [ "$FILENAME" != "chain.pem" ]; then
-        continue
-    fi
-    if [ "$FILENAME" != "fullchain.pem" ]; then
-        continue
-    fi
-
-    if [ "$FILENAME" != "privkey.pem" ]; then
-        continue
-    fi
+    echo "installing symlink to $FILENAME"
 
     # if we get there then the filename is likely something like "cert1.pem" and we need to symlink "cert.pem" to it.
     if echo "$FILENAME" | grep -q "cert"; then
-        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/cert.pem" >/dev/null
-        echo "installed cert.pem symlink to $FILENAME"
+        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/cert.pem"
     fi
 
+    # if we get there then the filename is likely something like "chain1.pem" and we need to symlink "chain.pem" to it.
     if echo "$FILENAME" | grep -q "chain"; then
-        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/chain.pem" >/dev/null
-        echo "installed chain.pem symlink to $FILENAME"
+        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/chain.pem"
     fi
 
-    echo "$FILENAME does not equal fullchain.pem"
+    # if we get there then the filename is likely something like "fullchain1.pem" and we need to symlink "fullchain.pem" to it.
     if echo "$FILENAME" | grep -q "fullchain"; then
-        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/fullchain.pem" >/dev/null
-        echo "installed fullchain.pem symlink to $FILENAME"
+        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/fullchain.pem"
     fi
 
+    # if we get there then the filename is likely something like "privkey1.pem" and we need to symlink "privkey.pem" to it.
     if echo "$FILENAME" | grep -q "privkey"; then
-        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/privkey.pem" >/dev/null
-        echo "installed privkey.pem symlink to $FILENAME"
+        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/privkey.pem"
     fi
-
 done
 echo "[COMPLETE]\n"
 
