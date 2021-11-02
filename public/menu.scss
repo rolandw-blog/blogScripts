@@ -1,0 +1,24 @@
+@import "base/mixins";
+@import "base/variables_dark";
+@import "components/reset";
+
+// for menu templates
+.menu-file {
+	color: $font-accent1;
+	@include desktop {
+		// these glyphs only work on desktop
+		&::before {
+			content: "🗎 ";
+		}
+	}
+}
+
+.menu-directory {
+	color: $font-accent3;
+	@include desktop {
+		// these glyphs only work on desktop
+		&::before {
+			content: "🗀 ";
+		}
+	}
+}
