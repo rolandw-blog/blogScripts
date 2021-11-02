@@ -82,10 +82,12 @@ fi
 /usr/bin/docker cp ./public/css/an-old-hope.css temp_container:/html/static
 /usr/bin/docker cp ./public/css/base temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
+echo "completed copying css"
 # Copy javascript to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 /usr/bin/docker cp ./public/js/index.js temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
+echo "completed copying scripts"
 # Copy media to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 /usr/bin/docker cp ./public/media/logo.png temp_container:/html/static
@@ -94,6 +96,7 @@ fi
 /usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/static
 /usr/bin/docker cp ./public/media/avatar.svg temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
+echo "completed copying media"
 echo "[COMPLETE]\n"
 
 sleep 0.25
@@ -102,9 +105,10 @@ echo "[STEP]\t Fixing file ownership in blog_content volume"
 # Fix ownership issues from copying files in and stuff
 # fix ownership to be node:node
 # 1. Create a build of the nginxProxy container which has the node user and group
-docker build -t fix_ownership_container -f ../nginxProxy/dockerfile ../nginxProxy
+docker build --quiet -t fix_ownership_container -f ../nginxProxy/dockerfile ../nginxProxy
 # 2. Using the image we just made, chown all the stuff
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html fix_ownership_container chown -R node:node /html
+/usr/bin/docker run --rm --name temp_container -v blog_content:/html fix_ownership_container ls -l /html
 # 777 all that stuff (for now)
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html fix_ownership_container chmod 777 -R /html
 echo "[COMPLETE]\n"
@@ -130,47 +134,29 @@ for d in $FILES; do
     /usr/bin/docker rm temp_container >/dev/null
     echo "Copied $FILENAME to blog_nginx_proxy_certs"
 
+
     # the cert copies over as cert1.pem not cert.pem so i create a symlink cert.pem to point to it
-    # echo "installing symlink to $FILENAME"
-
-    # check if the name is already correct (no need to symlink)
-    if [ "$FILENAME" != "cert.pem" ]; then
-        continue
-    fi
-
-    if [ "$FILENAME" != "chain.pem" ]; then
-        continue
-    fi
-    if [ "$FILENAME" != "fullchain.pem" ]; then
-        continue
-    fi
-
-    if [ "$FILENAME" != "privkey.pem" ]; then
-        continue
-    fi
+    echo "installing symlink to $FILENAME"
 
     # if we get there then the filename is likely something like "cert1.pem" and we need to symlink "cert.pem" to it.
     if echo "$FILENAME" | grep -q "cert"; then
-        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/cert.pem" >/dev/null
-        echo "installed cert.pem symlink to $FILENAME"
+        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/cert.pem"
     fi
 
+    # if we get there then the filename is likely something like "chain1.pem" and we need to symlink "chain.pem" to it.
     if echo "$FILENAME" | grep -q "chain"; then
-        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/chain.pem" >/dev/null
-        echo "installed chain.pem symlink to $FILENAME"
+        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/chain.pem"
     fi
 
-    echo "$FILENAME does not equal fullchain.pem"
+    # if we get there then the filename is likely something like "fullchain1.pem" and we need to symlink "fullchain.pem" to it.
     if echo "$FILENAME" | grep -q "fullchain"; then
-        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/fullchain.pem" >/dev/null
-        echo "installed fullchain.pem symlink to $FILENAME"
+        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/fullchain.pem"
     fi
 
+    # if we get there then the filename is likely something like "privkey1.pem" and we need to symlink "privkey.pem" to it.
     if echo "$FILENAME" | grep -q "privkey"; then
-        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/privkey.pem" >/dev/null
-        echo "installed privkey.pem symlink to $FILENAME"
+        docker run --name "temp_container" --rm -v "blog_nginx_proxy_certs:/keys" busybox ln -s -f "/keys/$FILENAME" "/keys/privkey.pem"
     fi
-
 done
 echo "[COMPLETE]\n"
 
