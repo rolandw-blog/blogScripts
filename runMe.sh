@@ -92,6 +92,7 @@ fi
 /usr/bin/docker cp ./public/media/github.svg temp_container:/html/static
 /usr/bin/docker cp ./public/media/twitter.svg temp_container:/html/static
 /usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/static
+/usr/bin/docker cp ./public/media/avatar.svg temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
 echo "[COMPLETE]\n"
 
