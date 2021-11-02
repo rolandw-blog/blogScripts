@@ -82,10 +82,12 @@ fi
 /usr/bin/docker cp ./public/css/an-old-hope.css temp_container:/html/static
 /usr/bin/docker cp ./public/css/base temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
+echo "completed copying css"
 # Copy javascript to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 /usr/bin/docker cp ./public/js/index.js temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
+echo "completed copying scripts"
 # Copy media to root
 /usr/bin/docker create --name temp_container -v blog_content:/html alpine >/dev/null
 /usr/bin/docker cp ./public/media/logo.png temp_container:/html/static
@@ -93,6 +95,7 @@ fi
 /usr/bin/docker cp ./public/media/twitter.svg temp_container:/html/static
 /usr/bin/docker cp ./public/media/linkedin.svg temp_container:/html/static
 /usr/bin/docker rm temp_container >/dev/null
+echo "completed copying media"
 echo "[COMPLETE]\n"
 
 sleep 0.25
@@ -101,9 +104,10 @@ echo "[STEP]\t Fixing file ownership in blog_content volume"
 # Fix ownership issues from copying files in and stuff
 # fix ownership to be node:node
 # 1. Create a build of the nginxProxy container which has the node user and group
-docker build -t fix_ownership_container -f ../nginxProxy/dockerfile ../nginxProxy
+docker build --quiet -t fix_ownership_container -f ../nginxProxy/dockerfile ../nginxProxy
 # 2. Using the image we just made, chown all the stuff
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html fix_ownership_container chown -R node:node /html
+/usr/bin/docker run --rm --name temp_container -v blog_content:/html fix_ownership_container ls -l /html
 # 777 all that stuff (for now)
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html fix_ownership_container chmod 777 -R /html
 echo "[COMPLETE]\n"
@@ -124,9 +128,9 @@ for d in $FILES; do
     FILENAME=$(basename $SOURCE)
 
     # copy the cert file to the volume
-    /usr/bin/docker create --name temp_container -v "blog_nginx_proxy_certs:/keys" alpine
+    /usr/bin/docker create --name temp_container -v "blog_nginx_proxy_certs:/keys" alpine >/dev/null
     sudo /usr/bin/docker cp -L "$SOURCE" temp_container:/keys
-    /usr/bin/docker rm temp_container
+    /usr/bin/docker rm temp_container >/dev/null
     echo "Copied $FILENAME to blog_nginx_proxy_certs"
 
 
