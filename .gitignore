@@ -1,1 +1,8 @@
 node_modules
+
+# ignore css
+public/css/about.css
+public/css/menu.css
+public/css/solarized.css
+public/css/tiny_dark.css
+public/css/tiny_light.css
