@@ -1,0 +1,113 @@
+@import "base/mixins";
+@import "base/variables_dark";
+@import "components/center";
+
+// Reset
+* {
+	margin: 0;
+	padding: 0;
+	color: unset;
+	font-family: $fonts;
+}
+
+// Colors
+body {
+	background-color: $bg-color;
+	color: $font-color;
+}
+
+// link styles
+a {
+	color: $font-accent3;
+	text-decoration: none;
+}
+
+// The nav is placed below the bio
+nav {
+	display: flex;
+	margin: 3em 0;
+	padding-top: 1em;
+	width: 100%;
+	border-top: 2px solid $font-accent3;
+	@include desktop {
+		// place absolute to avoid messing with positioning of the other text
+		position: absolute;
+		width: 75ch;
+	}
+}
+
+// Wraps all the content, centers it
+#content_wrapper {
+	margin: auto;
+	@include desktop {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+}
+
+// The content is displayed as a grid with 2 rows on mobile and 2 cols on desktop
+//     Mobile:     Desktop:
+//     |-------|    |-----------|
+//     |  pic  |    |     |     |
+//     |-------|    | pic | bio |
+//     |  bio  |    |     |     |
+//     |-------|    |-----------|
+#content {
+	display: grid;
+
+	// Mobile grid
+	grid-template-columns: 1fr;
+	grid-template-rows: auto 1fr;
+
+	margin: 1rem 3rem;
+	@include desktop {
+		// Desktop grid
+		grid-template-columns: auto 1fr;
+		grid-template-rows: 1fr;
+
+		align-items: center;
+		margin: 0px;
+	}
+}
+
+//     Mobile:     Desktop:
+//     |-------|    |-----------|
+//     |   1   |    |     |     |
+//     |-------|    |  1  |     |
+//     |       |    |     |     |
+//     |-------|    |-----------|
+#avatar {
+	grid-row: 1;
+	align-items: center;
+	margin: auto;
+	@include desktop {
+		grid-column: 1;
+	}
+}
+
+//     Mobile:     Desktop:
+//     |-------|    |-----------|
+//     |       |    |     |     |
+//     |-------|    |     |  2  |
+//     |   2   |    |     |     |
+//     |-------|    |-----------|
+#bio {
+	grid-row: 2;
+	max-width: 75ch;
+	@include desktop {
+		grid-row: 1;
+		grid-column: 2;
+	}
+}
+
+// constrain the image so the image does not become too big
+img {
+	min-width: 50vw;
+	max-height: 40vh;
+	@include desktop {
+		min-width: 20vw;
+		max-height: 450px;
+	}
+}
