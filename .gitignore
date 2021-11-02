@@ -6,4 +6,5 @@ public/css/menu.css
 public/css/solarized.css
 public/css/tiny_dark.css
 public/css/tiny_light.css
-public/menu.scss
+public/css/menu.scss
+public/css/index.css
