@@ -1,7 +1,8 @@
-@import "base/mixins";
-@import "components/chapters";
+@import "../base/mixins";
 @import "../base/variables_dark";
+@import "./chapters";
 @import "./nav";
+@import "../base/typography";
 
 $a-tags: "a, a:active, a:hover, a:visited";
 $headers: "h1, h2, h3, h4, h5, h6";
@@ -61,9 +62,6 @@ img {
 
 // ##──── Typography ────────────────────────────────────────────────────────────────────────
 article {
-	font-size: 16.18px;
-	// line-height: 2em;
-
 	// H3 gets a little bit of padding
 	h3 {
 		margin-top: 1.5em;
