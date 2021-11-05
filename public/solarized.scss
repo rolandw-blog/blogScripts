@@ -3,24 +3,59 @@
 @import "base/variables_solarized.scss";
 @import "components/center";
 
-// * {
-// 	margin: 0;
-// 	padding: 0;
-// 	color: unset;
-// 	font-family: $fonts;
-// 	overflow: hidden;
-// }
+// ##──── Alignment ────────────────────────────────────────────────────────────────────────────────
 
-// actual styles
-#content_wrapper {
+// +---------------------------------------+ <-- #content-wrapper
+// | +-----------------------------------+ |     (inherited from components/center)
+// | |                                   | < -- #content
+// | |          +-------------+          | |
+// | |          | #root-links |          | |
+// | |          +-------------+          | |
+// | |                                   | |
+// | +-----------------------------------+ |
+// +---------------------------------------+
+
+#content {
+	height: 100%;
+	margin: auto;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	margin: auto;
 }
 
-// colors
+$width-mobile: clamp(200px, 100%, 80vw);
+$width-desktop: clamp(200px, 100%, 25vw);
+
+#root-links {
+	width: $width-mobile;
+
+	// Place nav links in middle of content box
+	display: flex;
+	justify-content: center;
+
+	@include desktop {
+		width: $width-desktop;
+	}
+}
+
+.recent-line {
+	display: block;
+	white-space: nowrap;
+}
+
+.text-ellipsis {
+	width: $width-mobile;
+	overflow: hidden;
+	display: inline-block;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	@include desktop {
+		width: $width-desktop;
+	}
+}
+
+// ##──── Colors ───────────────────────────────────────────────────────────────────────────────────
 body {
 	background-color: $bg-color;
 }
@@ -44,54 +79,14 @@ a {
 	}
 }
 
-$width-mobile: clamp(200px, 100%, 80vw);
-$width-desktop: clamp(200px, 100%, 25vw);
-
-#root-links {
-	// background-color: #252728;
-	width: $width-mobile;
-	@include desktop {
-		width: $width-desktop;
-	}
-}
-
-#recent-links {
-	// background-color: #252728;
-	width: $width-mobile;
-	padding: 10px;
-	position: absolute;
-	margin-top: 2.5rem;
-	left: 0px;
-	right: 0px;
-	margin-left: auto;
-	margin-right: auto;
-	@include desktop {
-		width: $width-desktop;
-	}
-}
-
-.recent-line {
-	display: block;
-	white-space: nowrap;
-}
-
-.text-ellipsis {
-	width: $width-mobile;
-	overflow: hidden;
-	display: inline-block;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	@include desktop {
-		width: $width-desktop;
-	}
-}
-
 #home_link_wrapper {
 	margin: auto;
 	grid-row: 1;
 	margin: 1ch 0;
 }
 
+// No longer using the animated logo box thing
+//
 // @keyframes slideInFromLeft {
 // 	0% {
 // 		transform: translateX(-10%);
@@ -100,7 +95,7 @@ $width-desktop: clamp(200px, 100%, 25vw);
 // 		transform: translateX(0);
 // 	}
 // }
-
+//
 // .socialBox {
 // 	display: inline-block;
 // 	position: relative;
@@ -108,5 +103,21 @@ $width-desktop: clamp(200px, 100%, 25vw);
 // 	animation: 0.25s ease-out slideInFromLeft;
 // 	a {
 // 		padding: 0 0.5ch;
+// 	}
+// }
+
+//  No longer using recent links
+//
+// #recent-links {
+// 	width: $width-mobile;
+// 	padding: 10px;
+// 	position: absolute;
+// 	margin-top: 2.5rem;
+// 	left: 0px;
+// 	right: 0px;
+// 	margin-left: auto;
+// 	margin-right: auto;
+// 	@include desktop {
+// 		width: $width-desktop;
 // 	}
 // }
