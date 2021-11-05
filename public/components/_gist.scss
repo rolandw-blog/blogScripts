@@ -7,19 +7,86 @@
 $a-tags: "a, a:active, a:hover, a:visited";
 $headers: "h1, h2, h3, h4, h5, h6";
 
-* {
-	margin: 0;
-	padding: 0;
-	color: unset;
-	font-family: $fonts;
-}
-
+// ##──── Color ────────────────────────────────────────────────────────────────────────────────────
 body {
 	background-color: $bg-color;
 	color: $font-color;
 }
 
-// ##──── Alignment ─────────────────────────────────────────────────────────────────────────
+article {
+	a {
+		color: $font-accent3;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		color: $font-accent3;
+	}
+
+	// Code wrappers are used to wrap ALL code blocks (none, code, output)
+	.code-wrapper {
+		background-color: $code-block-bg;
+		color: $font-color;
+
+		// code block labels
+		.codeblock-label {
+			background-color: $font-accent1;
+			&:hover {
+				background-color: lighten($bg-color, 40%);
+			}
+
+			a {
+				color: $bg-color;
+			}
+		}
+
+		.codeblock-output-label {
+			&:hover {
+				background-color: lighten($bg-color, 40%);
+			}
+		}
+	}
+
+	// The code block itself (not the left button)
+	.codeblock-wrapper {
+		scrollbar-color: $bg-color $code-block-bg;
+	}
+
+	// Style output code blocks
+	.output-wrapper {
+		scrollbar-color: $bg-color $font-accent2;
+		// output blocks have a different background color to code blocks
+		// 		so we need to adjust the scroll bar background color for outputs to match
+		// 		the surrounding codeblock
+		.language-output {
+			// chrome scrollbar bg color
+			&::-webkit-scrollbar-track {
+				// change the color to $bg-color instead of $code-block-bg for output blocks
+				background-color: $bg-accent;
+			}
+			// firefox scrollbar bg color
+			scrollbar-color: $bg-color $bg-accent;
+		}
+	}
+
+	// "output" language
+	.is-output {
+		background-color: $font-accent2;
+		color: $font-color;
+	}
+
+	// inline code stuff
+	code:not([class]) {
+		background-color: $font-accent2;
+		color: $font-accent1;
+	}
+}
+
+// ##──── Alignment ────────────────────────────────────────────────────────────────────────────────
 #app {
 	display: grid;
 	grid-template-columns: auto minmax(auto, 100vw);
@@ -60,47 +127,26 @@ img {
 	margin-top: 1em;
 }
 
-// ##──── Typography ────────────────────────────────────────────────────────────────────────
+// ##──── Padding and Margins ──────────────────────────────────────────────────────────────────────
 article {
 	// H3 gets a little bit of padding
-	h3 {
-		margin-top: 1.5em;
-	}
+	// h3 {
+	// 	margin-top: 1.5em;
+	// }
 
 	// Make sure you leave this, without it lists wont even get a circle/square ::marker
 	ul {
 		margin-left: 2ch;
 	}
 
-	// size the heading elements
-	h1,
-	h2 {
-		font-size: 2.5em;
-	}
-
-	h2 {
-		margin: 20px 0;
-	}
-
-	h3 {
-		font-size: 1.5em;
-	}
-
-	// color and bad headings
+	// pad headings
 	h1,
 	h2,
 	h3,
 	h4,
 	h5,
 	h6 {
-		color: $font-accent3;
-
-		// Pad the heading text
 		margin: 1em 0;
-	}
-
-	a {
-		color: $font-accent3;
 	}
 
 	// BEWARE OF THIS MESS
@@ -140,48 +186,75 @@ article {
 	}
 }
 
-// ##──── Code ────────────────────────────────────────────────────────────────────────────
+// ##──── Typography ───────────────────────────────────────────────────────────────────────────────
+article {
+	// size the heading elements
+	h1,
+	h2 {
+		font-size: 2.5em;
+	}
+
+	h3 {
+		font-size: 1.5em;
+	}
+
+	// inline code stuff
+	code:not([class]) {
+		padding: 0 0.5ch;
+		line-height: 150%;
+		margin: 0.25ch;
+		word-break: break-all;
+		display: inline-block;
+	}
+
+	.codeblock-wrapper,
+	.output-wrapper {
+		font-family: monospace;
+	}
+}
+
+// ##──── Code ─────────────────────────────────────────────────────────────────────────────────────
+// +---------------------------------------+
+// |  .code-wrapper                        |
+// | +-----------------------------------+ |
+// | |  .codeblock-wrapper               | |
+// | |  or                               | |
+// | |  .output-wrapper                  | |
+// | |                                   | |
+// | +-----------------------------------+ |
+// |                                       |
+// +---------------------------------------+
 article {
 	// Code wrappers are used to wrap ALL code blocks (none, code, output)
 	.code-wrapper {
 		display: grid;
-		grid-template-columns: 70px 1fr;
-		background-color: $code-block-bg;
-		color: $font-color;
+		grid-template-columns: auto 1fr;
 
 		// code block labels
 		.codeblock-label {
 			grid-column: 1;
-			background-color: $font-accent1;
 			cursor: pointer;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			&:hover {
-				background-color: lighten($bg-color, 40%);
-			}
-			a {
-				color: $bg-color;
-			}
 		}
 
 		.codeblock-output-label {
 			cursor: unset;
-			&:hover {
-				background-color: lighten($bg-color, 40%);
-			}
 		}
+	}
+
+	.codeblock-wrapper,
+	.output-wrapper {
+		// Scroll the code when it overflows
+		overflow-x: scroll;
+		scrollbar-width: thin;
 	}
 
 	// The code block itself (not the left button)
 	.codeblock-wrapper {
 		grid-column: 2;
 		padding: 1em;
-
-		// Scroll the code when it overflows
-		overflow-x: scroll;
-		scrollbar-color: $bg-color $code-block-bg;
-		scrollbar-width: thin;
 
 		// chrome
 		&::-webkit-scrollbar {
@@ -203,51 +276,23 @@ article {
 		}
 	}
 
-	// Style output code blocks
-	.output-wrapper {
-		margin: 0px;
-		padding: 1em;
-		// Scroll the code when it overflows
-		overflow-x: scroll;
-		scrollbar-color: $bg-color $font-accent2;
-		scrollbar-width: thin;
-		// output blocks have a different background color to code blocks
-		// 		so we need to adjust the scroll bar background color for outputs to match
-		// 		the surrounding codeblock
-		.language-output {
-			// chrome scrollbar bg color
-			&::-webkit-scrollbar-track {
-				// change the color to $bg-color instead of $code-block-bg for output blocks
-				background-color: $bg-accent;
-			}
-			// firefox scrollbar bg color
-			scrollbar-color: $bg-color $bg-accent;
-		}
+	// Pad the space around a codeblocks copy label text
+	.codeblock-label {
+		padding: 0.75em;
 	}
 
+	// pad the code itself
 	.codeblock-wrapper,
 	.output-wrapper {
-		font-family: monospace;
+		padding: 1em;
 	}
 
 	// "output" language
 	.is-output {
 		margin: 0px;
-		background-color: $font-accent2;
-		color: $font-color;
 		.codeblock-label {
+			// hide the codeblock label (no need to copy output code)
 			display: none;
 		}
-	}
-
-	// inline code stuff
-	code:not([class]) {
-		background-color: $font-accent2;
-		padding: 0 0.5ch;
-		line-height: 150%;
-		margin: 0.25ch;
-		color: $font-accent1;
-		word-break: break-all;
-		display: inline-block;
 	}
 }

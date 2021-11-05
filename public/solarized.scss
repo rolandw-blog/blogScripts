@@ -1,35 +1,14 @@
+@import "components/reset";
 @import "base/mixins";
 @import "base/variables_solarized.scss";
 @import "components/center";
 
-* {
-	margin: 0;
-	padding: 0;
-	color: unset;
-	font-family: $fonts;
-	overflow: hidden;
-}
-
-// body,
-// html {
-// 	height: 100%;
-// 	height: -moz-available; /* WebKit-based browsers will ignore this. */
-// 	height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-// 	height: fill-available;
-// }
-
-// #content_wrapper {
-// 	height: 100%;
-// 	height: -moz-available; /* WebKit-based browsers will ignore this. */
-// 	height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-// 	height: fill-available;
-// }
-
-// @media screen and (min--moz-device-pixel-ratio: 0) {
-// 	#content_wrapper {
-// 		// background-color: blue !important;
-// 		height: 100vh;
-// 	}
+// * {
+// 	margin: 0;
+// 	padding: 0;
+// 	color: unset;
+// 	font-family: $fonts;
+// 	overflow: hidden;
 // }
 
 // actual styles

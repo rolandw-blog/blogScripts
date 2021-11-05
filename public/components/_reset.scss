@@ -1,3 +1,5 @@
+@import "../base/fonts";
+
 * {
 	margin: 0;
 	padding: 0;
@@ -7,8 +9,7 @@
 
 a {
 	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
+	&:hover {
+		text-decoration: underline;
+	}
 }

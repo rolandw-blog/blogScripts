@@ -1,6 +1,7 @@
 @import "base/mixins";
 @import "base/variables_dark";
 @import "components/center";
+@import "./base/typography";
 
 // Reset
 * {
@@ -10,7 +11,7 @@
 	font-family: $fonts;
 }
 
-// Colors
+// ##──── Color ────────────────────────────────────────────────────────────────────────────────────
 body {
 	background-color: $bg-color;
 	color: $font-color;
@@ -22,19 +23,11 @@ a {
 	text-decoration: none;
 }
 
-// The nav is placed below the bio
-nav {
-	display: flex;
-	margin: 3em 0;
-	padding-top: 1em;
-	width: 100%;
-	border-top: 2px solid $font-accent3;
-	@include desktop {
-		// place absolute to avoid messing with positioning of the other text
-		position: absolute;
-		width: 75ch;
-	}
-}
+// ##──── Alignment (centering) ────────────────────────────────────────────────────────────────────
+
+// #content_wrapper -> #content -> nav
+//     content_wrapper creates 100vhx100vw screen
+//     content centers the visible content in the center of the content_wrapper
 
 // Wraps all the content, centers it
 #content_wrapper {
@@ -72,6 +65,24 @@ nav {
 	}
 }
 
+// ##──── Custom nav for about page ────────────────────────────────────────────────────────────────
+
+// The nav is placed below the bio
+nav {
+	display: flex;
+	margin: 3em 0;
+	padding-top: 1em;
+	width: 100%;
+	border-top: 2px solid $font-accent3;
+	@include desktop {
+		// place absolute to avoid messing with positioning of the other text
+		position: absolute;
+		width: 75ch;
+	}
+}
+
+// ##──── Alignment (bio and pic) ──────────────────────────────────────────────────────────────────
+
 //     Mobile:     Desktop:
 //     |-------|    |-----------|
 //     |   1   |    |     |     |
@@ -103,7 +114,7 @@ nav {
 }
 
 // constrain the image so the image does not become too big
-img {
+#avatar > img {
 	min-width: 50vw;
 	max-height: 40vh;
 	@include desktop {

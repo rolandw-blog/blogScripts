@@ -1,7 +1,15 @@
 // regular blog post articles
 article {
 	font-size: 16.18px;
-	line-height: 140%;
+	// make the line height a little thinner in articles
+	p {
+		line-height: 140%;
+	}
+}
+
+// outside of articles make the line height a little taller
+p {
+	line-height: 150%;
 }
 
 // for styling menus and making their text a bit bigger
