@@ -1,15 +1,8 @@
+@import "components/reset";
 @import "base/mixins";
 @import "base/variables_dark";
 @import "components/center";
-@import "./base/typography";
-
-// Reset
-* {
-	margin: 0;
-	padding: 0;
-	color: unset;
-	font-family: $fonts;
-}
+@import "base/typography";
 
 // ##──── Color ────────────────────────────────────────────────────────────────────────────────────
 body {
@@ -21,6 +14,18 @@ body {
 a {
 	color: $font-accent3;
 	text-decoration: none;
+}
+
+// ##──── Typography ───────────────────────────────────────────────────────────────────────────────
+aside {
+	p {
+		margin-top: 1em;
+
+		// do not put top margin on the first paragraph
+		&:first-of-type {
+			margin-top: 0;
+		}
+	}
 }
 
 // ##──── Alignment (centering) ────────────────────────────────────────────────────────────────────
