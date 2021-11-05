@@ -55,6 +55,27 @@ echo "[COMPLETE]\n"
 
 sleep 0.25
 
+echo "[STEP]\t Compiling SCSS to CSS"
+
+# Check node-sass is installed
+if ! [ -x "$(command -v node-sass)" ]; then
+  echo "node-sass could not be found" >&2
+  exit 1
+fi
+
+# Create container
+/usr/bin/docker create --name temp_container -v blog_content:/html alpine
+
+# Run commands
+node-sass -r -o ./public/css ./public && \
+for f in ./css/*; do /usr/bin/docker cp "$f" temp_container:/html/static; done
+
+# Delete container
+/usr/bin/docker rm temp_container >/dev/null
+echo "[COMPLETE]\n"
+
+sleep 0.25
+
 echo "[STEP]\t Moving static content to blog_content volume"
 # Make dist directory inside the blog_content volume
 /usr/bin/docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static
