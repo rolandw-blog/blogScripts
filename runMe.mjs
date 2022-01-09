@@ -194,11 +194,12 @@ console.log("Completed copying media");
 console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 console.log(chalk.bgCyan("[STEP]\t Moving certificates to blog_nginx_proxy_certs volume"));
+// certs expects symlinks to the actual certs
 const certs = (
-  await $`ls ${path.resolve(blogCertDirParsed.dir, blogCertDirParsed.base)}/*.pem`
+  await $`sudo find ${path.resolve(blogCertDirParsed.dir, blogCertDirParsed.base)} -type l`
 ).stdout
   .trim()
-  .split("\n");
+  .split("\n").filter((s) => /.*\.pem/.test(s));
 
 // clean up old certs
 console.log("Cleaning up old certs");
@@ -211,7 +212,7 @@ console.log("Copying new certs");
 for (const f of certs) {
   await createTempContainer("temp_container", ["blog_nginx_proxy_certs:/keys"], "alpine");
   const certPath = path.resolve(f);
-  const resolvedSymlink = (await $`realpath ${certPath}`).stdout.trim();
+  const resolvedSymlink = (await $`sudo realpath ${certPath}`).stdout.trim();
   $.verbose = true;
   await $`sudo docker cp -L ${resolvedSymlink} temp_container:/keys/${path.parse(f).base}`;
   $.verbose = false;
