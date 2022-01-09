@@ -75,6 +75,8 @@ services:
     logging:
       driver: none
     restart: unless-stopped
+    networks:
+      - gateway_network
 
   ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
   blogbuilder:
