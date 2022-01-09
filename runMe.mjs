@@ -73,7 +73,7 @@ console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 // create env file
 console.log(chalk.bgCyan("[STEP]\t Creating env file for compose"));
-$`ln -s ${root}/docker/.env ../.env`
+await nothrow($`ln -s ${root}/docker/.env ../.env`);
 console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 // Create data containers
