@@ -194,24 +194,26 @@ console.log("Completed copying media");
 console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 console.log(chalk.bgCyan("[STEP]\t Moving certificates to blog_nginx_proxy_certs volume"));
-const certs = fs
-  .readdirSync(path.resolve(blogCertDirParsed.dir, blogCertDirParsed.base))
-  .filter((f) => path.parse(f).ext === ".pem");
-console.log(`Read ${certs.length} certs: ${certs.join(" ")}`);
+const certs = (
+  await $`ls ${path.resolve(blogCertDirParsed.dir, blogCertDirParsed.base)}/*.pem`
+).stdout
+  .trim()
+  .split("\n");
 
 // clean up old certs
 console.log("Cleaning up old certs");
 await deleteTempContainer("temp_container");
-await $`sudo docker run --rm --name temp_container -v blog_nginx_proxy_certs:/keys alpine find /keys -type f -type l -delete`;
+await $`sudo docker run --rm --name temp_container -v blog_nginx_proxy_certs:/keys alpine find /keys -type f -delete`;
+await $`sudo docker run --rm --name temp_container -v blog_nginx_proxy_certs:/keys alpine find /keys -type l -delete`;
 
 // copy new certs into volume
 console.log("Copying new certs");
 for (const f of certs) {
   await createTempContainer("temp_container", ["blog_nginx_proxy_certs:/keys"], "alpine");
-  const certPath = path.resolve(blogCertDirParsed.dir, blogCertDirParsed.base, f);
+  const certPath = path.resolve(f);
   const resolvedSymlink = (await $`realpath ${certPath}`).stdout.trim();
   $.verbose = true;
-  await $`sudo docker cp -L ${resolvedSymlink} temp_container:/keys/${f}`;
+  await $`sudo docker cp -L ${resolvedSymlink} temp_container:/keys/${path.parse(f).base}`;
   $.verbose = false;
   await deleteTempContainer("temp_container");
 
