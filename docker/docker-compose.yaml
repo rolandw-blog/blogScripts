@@ -25,6 +25,8 @@ services:
     volumes:
       - blog_content:/html:rw
     restart: unless-stopped
+    networks:
+      - gateway_network
 
   ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
   blogwatcher:
@@ -51,8 +53,7 @@ services:
       - "${BLOGWATCHER_PORT}" # expose ports to other containers within the docker network
     restart: unless-stopped
     networks:
-      gateway_network:
-        ipv4_address: 172.22.0.102
+      - gateway_network
 
   blogwatcher_database:
     container_name: blogwatcher_database # `docker-compose up` will name the container this name
@@ -97,8 +98,8 @@ services:
       - "${BLOGBUILDER_PORT}" # expose ports to other containers within the docker network
     restart: unless-stopped
     networks:
-      gateway_network:
-        ipv4_address: 172.22.0.101
+      - gateway_network
+
   # blogbuilder:
   #     build: ./blogBuilder
   #     container_name: blogbuilder
@@ -118,6 +119,5 @@ volumes:
 
 # default all these containers to be on the gateway_network
 networks:
-  default:
-    external:
-      name: gateway_network
+  gateway_network:
+    external: true

@@ -25,6 +25,9 @@ services:
       - ./blogWatcher:/usr/src/app
     ports:
       - "${BLOGWATCHER_PORT}:${BLOGWATCHER_PORT}" # publish ports to the host
+    networks:
+      gateway_network:
+        ipv4_address: 172.22.0.102
 
   ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
   blogbuilder:
@@ -36,6 +39,9 @@ services:
       - ./blogBuilder:/usr/src/app
     ports:
       - "${BLOGBUILDER_PORT}:${BLOGBUILDER_PORT}" # publish ports to the host
+    networks:
+      gateway_network:
+        ipv4_address: 172.22.0.101
 
   # ! out of action for now because it crashes
   # management:
