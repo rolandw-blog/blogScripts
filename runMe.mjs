@@ -28,7 +28,7 @@ async function createTempContainer(name = "temp_container", volumes = [], image 
     await $`docker create --name ${name} ${volumeString} ${image}`;
     $.quote = q;
   } catch (err) {
-    console.log(err);
+    console.log(chalk.bgRed(err));
   }
 }
 
@@ -54,7 +54,7 @@ try {
     throw new Error(`The blog cert directory "${blogCertDirParsed.dir}" does not exist`);
   }
 } catch (err) {
-  console.log(err);
+  console.log(chalk.bgRed(err));
   process.exit(1);
 }
 
@@ -73,7 +73,8 @@ console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 // create env file
 console.log(chalk.bgCyan("[STEP]\t Creating env file for compose"));
-$`ln -s ${root}/docker/.env ../.env`
+await $`rm ../.env`;
+await nothrow($`ln -s ${root}/docker/.env ../.env`);
 console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 // Create data containers
@@ -91,9 +92,9 @@ console.log(chalk.bgCyan(chalk.bgCyan("[COMPLETE]\n")));
 console.log(chalk.bgCyan("[STEP]\t Compiling SCSS to CSS"));
 
 // Check node sass is installed
-const nodeSassPath = await $`command -v node-sass`;
+const nodeSassPath = await nothrow($`command -v node-sass`);
 if (nodeSassPath.exitCode !== 0) {
-  console.log("node-sass not found. Please install node-sass");
+  console.log(chalk.bgRed("node-sass not found. Please install node-sass"));
   process.exit(1);
 }
 await createTempContainer("temp_container", ["blog_content:/html"], "alpine");
@@ -204,7 +205,8 @@ const certs = (
   await $`sudo find ${path.resolve(blogCertDirParsed.dir, blogCertDirParsed.base)} -type l`
 ).stdout
   .trim()
-  .split("\n").filter((s) => /.*\.pem/.test(s));
+  .split("\n")
+  .filter((s) => /.*\.pem/.test(s));
 
 // clean up old certs
 console.log("Cleaning up old certs");
