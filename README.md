@@ -2,7 +2,11 @@
 
 Scripts n stuff to manage the blog containers.
 
-Run `./runMe.sh` to symlink the docker files required for starting the blog to their correct location.
+```none
+npm install -g zx
+```
+
+Then run `./runMe.mjs` to bootstrap the blog.
 
 The final file structure should look something like this:
 
