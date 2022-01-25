@@ -72,9 +72,9 @@ services:
       - "27017:27017"
     expose:
       - 27017
+    restart: unless-stopped
     logging:
       driver: none
-    restart: unless-stopped
 
   ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
   blogbuilder:
