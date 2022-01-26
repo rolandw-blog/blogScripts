@@ -194,7 +194,6 @@ await postInstall(media);
 
 console.log("Completed copying media");
 
-// await deleteTempContainer("temp_container");
 console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 console.log(chalk.bgCyan("[STEP]\t Moving certificates to blog_nginx_proxy_certs volume"));
