@@ -82,8 +82,6 @@ console.log(chalk.bgCyan("[STEP]\t Creating blog containers"));
 $.verbose = true;
 await $`docker volume create --name=blog_content`;
 await $`docker volume create --name=blogwatcher_database`;
-await $`docker volume create --name=blogwatcher_dev_node_modules`;
-await $`docker volume create --name=management_ui_dev_node_modules`;
 await $`docker volume create --name=blog_nginx_proxy_certs`;
 $.verbose = false;
 console.log(chalk.bgCyan(chalk.bgCyan("[COMPLETE]\n")));
