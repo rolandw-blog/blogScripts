@@ -1,74 +1,72 @@
 version: "3.4"
 services:
-    # auth:
-    #     volumes:
-    #         - ./auth:/usr/src/app
+  # auth:
+  #     volumes:
+  #         - ./auth:/usr/src/app
 
-    blog_nginx_proxy:
-        build:
-            context: ./nginxProxy
-            dockerfile: dockerfile
-            target: development
-        volumes:
-            - blog_nginx_proxy_certs:/keys
+  blog_nginx_proxy:
+    build:
+      context: ./nginxProxy
+      dockerfile: dockerfile
+      target: development
+      args:
+        - BLOGBUILDER_PORT=${BLOGBUILDER_PORT}
+        - BLOGWATCHER_PORT=${BLOGWATCHER_PORT}
+    volumes:
+      - blog_nginx_proxy_certs:/keys
+      - ./blogScripts/public/css/:/html/static/css
 
-    ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
-    blogwatcher:
-        stdin_open: true # docker run -i
-        tty: true # docker run -t
-        build:
-            target: development # uses the dockerfile stage name
-        volumes:
-            - ./blogWatcher:/usr/src/app
-            # - blogwatcher_dev_node_modules:/usr/src/app/node_modules # prevents host node_modules getting mounted
-        ports:
-            - "3000:3001" # publish ports to the host
-        networks:
-            gateway_network:
-                ipv4_address: 172.22.0.102
+  ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
+  blogwatcher:
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    build:
+      target: development # uses the dockerfile stage name
+    volumes:
+      - ./blogWatcher:/usr/src/app
+    ports:
+      - "${BLOGWATCHER_PORT}:${BLOGWATCHER_PORT}" # publish ports to the host
+    networks:
+      gateway_network:
+        ipv4_address: 172.22.0.102
 
-    ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
-    blogbuilder:
-        stdin_open: true # docker run -i
-        tty: true # docker run -t
-        build:
-            target: development # uses the dockerfile stage name
-        volumes:
-            - ./blogBuilder:/usr/src/app
-            - blogbuilder_dev_node_modules:/usr/src/app/node_modules # prevents host node_modules getting mounted
-        ports:
-            - "2000:2000" # publish ports to the host
-        networks:
-            gateway_network:
-                ipv4_address: 172.22.0.101
+  ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
+  blogbuilder:
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    build:
+      target: development # uses the dockerfile stage name
+    volumes:
+      - ./blogBuilder:/usr/src/app
+    ports:
+      - "${BLOGBUILDER_PORT}:${BLOGBUILDER_PORT}" # publish ports to the host
+    networks:
+      gateway_network:
+        ipv4_address: 172.22.0.101
 
-    # ! out of action for now because it crashes
-    # management:
-    #     build:
-    #         context: ./managementUI
-    #         dockerfile: dockerfile
-    #     stdin_open: true # https://github.com/facebook/create-react-app/issues/8688
-    #     container_name: management_dev
-    #     expose:
-    #         - "4000"
-    #     volumes:
-    #         - ./managementUI/frontend:/usr/src/app
-    #         - management_ui_dev_node_modules:/usr/src/app/node_modules
+  # ! out of action for now because it crashes
+  # management:
+  #     build:
+  #         context: ./managementUI
+  #         dockerfile: dockerfile
+  #     stdin_open: true # https://github.com/facebook/create-react-app/issues/8688
+  #     container_name: management_dev
+  #     expose:
+  #         - "4000"
+  #     volumes:
+  #         - ./managementUI/frontend:/usr/src/app
+  #         - management_ui_dev_node_modules:/usr/src/app/node_modules
 
 # prevents the node_modules from being mapped to the host
 # https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
 volumes:
-    blogwatcher_dev_node_modules:
-        external: true
-    blogbuilder_dev_node_modules:
-        external: true
-    blog_content:
-        external: true
-    blog_nginx_proxy_certs:
-        external: true
-    management_ui_dev_node_modules:
-        external: true
+  blog_content:
+    external: true
+  blog_nginx_proxy_certs:
+    external: true
+  management_ui_dev_node_modules:
+    external: true
 
 networks:
-    gateway_network:
-        external: true
+  gateway_network:
+    external: true

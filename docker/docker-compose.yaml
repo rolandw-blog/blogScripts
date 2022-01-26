@@ -1,98 +1,125 @@
 version: "3.4"
 services:
-    # auth:
-    #     build: ./auth
-    #     container_name: authentication
-    #     expose:
-    #         - "8080"
+  # auth:
+  #     build: ./auth
+  #     container_name: authentication
+  #     expose:
+  #         - "8080"
 
-    blog_nginx_proxy:
-        container_name: blog_nginx_proxy
-        image: blog_nginx_proxy:latest
-        build:
-            context: ./nginxProxy
-            dockerfile: dockerfile
-        ports:
-            - "80:80"
-            - "443:443"
-        volumes:
-            - blog_content:/html:rw
-        restart: unless-stopped
+  blog_nginx_proxy:
+    container_name: blog_nginx_proxy
+    image: blog_nginx_proxy:latest
+    build:
+      context: ./nginxProxy
+      dockerfile: dockerfile
+      args:
+        - BLOGBUILDER_PORT=${BLOGBUILDER_PORT}
+        - BLOGWATCHER_PORT=${BLOGWATCHER_PORT}
+    environment:
+      - NGINX_HOST=localhost
+      - BLOGBUILDER_PORT=${BLOGBUILDER_PORT}
+      - BLOGWATCHER_PORT=${BLOGWATCHER_PORT}
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - blog_content:/html:rw
+    restart: unless-stopped
+    networks:
+      - gateway_network
 
-    ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
-    blogwatcher:
-        container_name: blogwatcher
-        image: blogwatcher:latest
-        depends_on:
-            - blogwatcher_database
-        build:
-            context: ./blogWatcher
-            dockerfile: dockerfile
-        environment:
-            - PORT=3001
-            - API_SERVICE=/api/v1/watch
-        expose:
-            - "3001" # expose ports to other containers within the docker network
-        restart: unless-stopped
+  ##──── blogwatcher ───────────────────────────────────────────────────────────────────────
+  blogwatcher:
+    container_name: blogwatcher
+    image: blogwatcher:latest
+    depends_on:
+      - blogwatcher_database
+    build:
+      context: ./blogWatcher
+      dockerfile: dockerfile
+    environment:
+      - PORT=${BLOGWATCHER_PORT}
+      - API_URL=http://blogwatcher:${BLOGWATCHER_PORT}
+      - NODE_ENV=development
+      - DOMAIN=localhost
+      - LOG_LEVEL=debug
+      - MONGOOSE_USERNAME=blogwatcher
+      - MONGOOSE_PASSWORD=rhinos
+      - MONGOOSE_HOST=blogwatcher_database
+      - MONGOOSE_PORT=27017
+      - MONGOOSE_DATABASE=blogwatcher
+      - MONGOOSE_AUTH_SOURCE=blogwatcher
+    expose:
+      - "${BLOGWATCHER_PORT}" # expose ports to other containers within the docker network
+    restart: unless-stopped
+    networks:
+      - gateway_network
 
-    blogwatcher_database:
-        container_name: blogwatcher_database # `docker-compose up` will name the container this name
-        image: blogwatcher_database # `docker-compose build` will tag the container with this name
-        build:
-            context: ./blogWatcher/database
-            dockerfile: dockerfile
-        environment:
-            # back up admin user in case something goes wrong
-            MONGO_INITDB_ROOT_USERNAME: admin
-            MONGO_INITDB_ROOT_PASSWORD: rhinos
-        volumes:
-            # Store the mongo database on the host to make it persistent between container restarts
-            - blogwatcher_database:/data/db
-        ports:
-            - "27017:27017"
-        expose:
-            - 27017
-        logging:
-            driver: none
-        restart: unless-stopped
+  blogwatcher_database:
+    container_name: blogwatcher_database # `docker-compose up` will name the container this name
+    image: blogwatcher_database # `docker-compose build` will tag the container with this name
+    build:
+      context: ./blogWatcher/database
+      dockerfile: dockerfile
+    environment:
+      # back up admin user in case something goes wrong
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: rhinos
+    volumes:
+      # Store the mongo database on the host to make it persistent between container restarts
+      - blogwatcher_database:/data/db
+    ports:
+      - "27017:27017"
+    expose:
+      - 27017
+    restart: unless-stopped
+    logging:
+      driver: none
+    networks:
+      - gateway_network
 
-    ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
-    blogbuilder:
-        container_name: blogbuilder
-        image: blogbuilder:latest
-        depends_on:
-            - blogwatcher
-        build:
-            context: ./blogBuilder
-            dockerfile: dockerfile
-        volumes:
-            - blog_content:/html:rw
-        environment:
-            - PORT=3001
-            - API_SERVICE=/api/v1/build
-        expose:
-            - "3001" # expose ports to other containers within the docker network
-        restart: unless-stopped
+  ##──── blogbuilder ───────────────────────────────────────────────────────────────────────
+  blogbuilder:
+    container_name: blogbuilder
+    image: blogbuilder:latest
+    depends_on:
+      - blogwatcher
+    build:
+      context: ./blogBuilder
+      dockerfile: dockerfile
+    volumes:
+      - blog_content:/html:rw
+    environment:
+      - PORT=${BLOGBUILDER_PORT}
+      - API_URL=http://blogwatcher:${BLOGWATCHER_PORT}
+      - NODE_ENV=development
+      - DOMAIN=localhost
+      - LOG_LEVEL=debug
+      - OUTPUT_DIR=/html/dist
+    expose:
+      - "${BLOGBUILDER_PORT}" # expose ports to other containers within the docker network
+    restart: unless-stopped
+    networks:
+      - gateway_network
 
-    # blogbuilder:
-    #     build: ./blogBuilder
-    #     container_name: blogbuilder
-    #     environment:
-    #         - PORT=3002
-    #     ports:
-    #         - "9229:9229"
+  # blogbuilder:
+  #     build: ./blogBuilder
+  #     container_name: blogbuilder
+  #     environment:
+  #         - PORT=3002
+  #     ports:
+  #         - "9229:9229"
 
-# Using `external: true` causes docker to complain if the volume does not exist
+  # Using `external: true` causes docker to complain if the volume does not exist
 volumes:
-    blogwatcher_database:
-        external: true
-    blog_content:
-        external: true
-    blog_nginx_proxy_certs:
-        external: true
+  blogwatcher_database:
+    external: true
+  blog_content:
+    external: true
+  blog_nginx_proxy_certs:
+    external: true
 
 # default all these containers to be on the gateway_network
 networks:
-    default:
-        external:
-            name: gateway_network
+  gateway_network:
+    external: true
