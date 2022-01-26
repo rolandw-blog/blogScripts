@@ -34,7 +34,48 @@ part of the build process bakes (using sed) the port numbers into the nginx conf
 
 To work on public asset stuff, cd into public and run the following command to watch your sass files.
 
+This alone is not effective for development, read the next section **Hot Reload** for that.
+
 ```none
 cd ./public
 nodemon -e scss --exec node-sass -r -o ./css .
 ```
+
+## Hot Reload
+
+### Static Page Content
+
+In development, prepending the url with `/hot/` will rebuild the page each time you load it.
+
+This is done by instead of serving a static HTML file from nginx directly, you are instead
+proxied to the blog builder which will build the page and send it back to you as HTML.
+
+### CSS
+
+The hot reload route will not apply to css. To hot reload CSS you must mount the css directory on the host
+to the container like so:
+
+The recommended location to place this is in the specific `docker/development.yaml` file.
+
+```yaml
+  blog_nginx_proxy:
+    build:
+      context: ./nginxProxy
+      dockerfile: dockerfile
+      target: development
+      args:
+        - BLOGBUILDER_PORT=${BLOGBUILDER_PORT}
+        - BLOGWATCHER_PORT=${BLOGWATCHER_PORT}
+    volumes:
+      - blog_nginx_proxy_certs:/keys
+      # ADD THIS LINE
+      - ./blogScripts/public/css/:/html/static/css
+```
+
+Then run the blog though docker as usual. Then cd into public and run the SCSS watch command.
+
+```none
+nodemon -e scss --exec node-sass -r -o ./css .
+```
+
+Changes on your disk will be reflected in the browser. Its recommended to use the `/hot/` prefix on the url as well to ensure that your page is rebuilt on each load.
