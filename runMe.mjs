@@ -62,13 +62,17 @@ try {
 console.log(chalk.bgCyan("[STEP]\t Linking docker compose scripts to root of blog..."));
 // root is where blogscripts is run from
 const root = (await $`pwd -P`).stdout.trim();
-await $`ln -s ${root}/docker/docker-compose.yaml ../docker-compose.yaml`.catch(() => {});
+await nothrow($`rm ../docker-compose.yaml`);
+await nothrow($`ln -s ${root}/docker/docker-compose.yaml ../docker-compose.yaml`);
 console.log("linking development.yaml");
-await $`ln -s ${root}/docker/development.yaml ../development.yaml`.catch(() => {});
+await nothrow($`rm ../development.yaml`);
+await nothrow($`ln -s ${root}/docker/development.yaml ../development.yaml`);
 console.log("linking production.yaml");
-await $`ln -s ${root}/docker/production.yaml ../production.yaml`.catch(() => {});
+await nothrow($`../production.yaml`);
+await nothrow($`ln -s ${root}/docker/production.yaml ../production.yaml`);
 console.log("linking .dockerignore");
-await $`ln -s ${root}/docker/.dockerignore ../.dockerignore`.catch(() => {});
+await nothrow($`../.dockerignore`);
+await nothrow($`ln -s ${root}/docker/.dockerignore ../.dockerignore`);
 console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 // create env file
