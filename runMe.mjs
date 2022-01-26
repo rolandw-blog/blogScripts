@@ -123,24 +123,29 @@ const favicon = {
 };
 
 const styles = {
-  "./public/css/menu.css": "/html/static/menu.css",
-  "./public/css/solarized.css": "/html/static/solarized.css",
-  "./public/css/tiny_dark.css": "/html/static/tiny_dark.css",
-  "./public/css/tiny_light.css": "/html/static/tiny_light.css",
-  "./public/css/an-old-hope.css": "/html/static/an-old-hope.css",
+  "./public/css/menu.css": "/html/static/css/menu.css",
+  "./public/css/solarized.css": "/html/static/css/solarized.css",
+  "./public/css/tiny_dark.css": "/html/static/css/tiny_dark.css",
+  "./public/css/tiny_light.css": "/html/static/css/tiny_light.css",
+  "./public/css/an-old-hope.css": "/html/static/css/an-old-hope.css",
 };
 
 const scripts = {
-  "./public/js/index.js": "/html/static/index.js",
+  "./public/js/index.js": "/html/static/scripts/index.js",
 };
 
 const media = {
-  "./public/media/logo.png": "/html/static/logo.png",
-  "./public/media/github.svg": "/html/static/github.svg",
-  "./public/media/twitter.svg": "/html/static/twitter.svg",
-  "./public/media/linkedin.svg": "/html/static/linkedin.svg",
-  "./public/media/avatar.svg": "/html/static/avatar.svg",
+  "./public/media/logo.png": "/html/static/media/logo.png",
+  "./public/media/github.svg": "/html/static/media/github.svg",
+  "./public/media/twitter.svg": "/html/static/media/twitter.svg",
+  "./public/media/linkedin.svg": "/html/static/media/linkedin.svg",
+  "./public/media/avatar.svg": "/html/static/media/avatar.svg",
 };
+
+// Make the various directories
+await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/css`;
+await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/scripts`;
+await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/media`;
 
 const copyFiles = async (filesMap) => {
   for (const f of Object.keys(filesMap)) {
