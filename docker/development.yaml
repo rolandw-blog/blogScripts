@@ -59,10 +59,6 @@ services:
 # prevents the node_modules from being mapped to the host
 # https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
 volumes:
-  blogwatcher_dev_node_modules:
-    external: true
-  blogbuilder_dev_node_modules:
-    external: true
   blog_content:
     external: true
   blog_nginx_proxy_certs:
