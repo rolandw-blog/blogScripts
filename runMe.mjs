@@ -75,6 +75,16 @@ await nothrow($`../.dockerignore`);
 await nothrow($`ln -s ${root}/docker/.dockerignore ../.dockerignore`);
 console.log(chalk.bgCyan("[COMPLETE]\n"));
 
+// Make the various directories
+console.log(chalk.bgCyan("[STEP]\t Creating content directories"));
+$.verbose = true;
+await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static`;
+await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/css`;
+await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/scripts`;
+await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/media`;
+$.verbose = false;
+console.log(chalk.bgCyan("[COMPLETE]\n"));
+
 // create env file
 console.log(chalk.bgCyan("[STEP]\t Creating env file for compose"));
 await $`rm ../.env`;
@@ -99,110 +109,37 @@ if (nodeSassPath.exitCode !== 0) {
   console.log(chalk.bgRed("node-sass not found. Please install node-sass"));
   process.exit(1);
 }
-await createTempContainer("temp_container", ["blog_content:/html"], "alpine");
+
 $.verbose = true;
 await $`node-sass -r -o ./public/css ./public`;
 $.verbose = false;
+
 const cssPath = path.resolve(root, "public/css");
-for (const f of fs.readdirSync(cssPath)) {
-  if (f.endsWith(".css")) {
-    await $`docker cp ${path.resolve(cssPath, f)} temp_container:/html/static`;
-  }
-}
-await deleteTempContainer("temp_container");
-console.log(chalk.bgCyan("[COMPLETE]\n"));
+const mediaPath = path.resolve(root, "public/media");
+const scriptsPath = path.resolve(root, "public/js");
 
-console.log(chalk.bgCyan("[STEP]\t Moving static content to blog_content volume"));
+// copy public stuff over
+await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${cssPath}:/css" alpine cp -r /css /html/static`;
+await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${mediaPath}:/media" alpine cp -r /media /html/static`;
+await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${scriptsPath}:/scripts" alpine cp -r /scripts /html/static`;
 
-const htmlDevelopment = {
-  "./public/html/landing_development/index.html": "/html/index.html",
-};
+console.log(chalk.bgGray("CSS"));
+const cssFiles = (
+  await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${cssPath}:/css" alpine ls -l /html/static/css`
+).stdout.trim();
+console.log(cssFiles);
 
-const htmlProduction = {
-  "./public/html/landing_production/index.html": "/html/index.html",
-};
+console.log(chalk.bgGray("MEDIA"));
+const mediaFiles = (
+  await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${mediaPath}:/media" alpine ls -l /html/static/media`
+).stdout.trim();
+console.log(mediaFiles);
 
-const favicon = {
-  "../nginxProxy/html/favicon.ico": "/html/static/favicon.ico",
-};
-
-const styles = {
-  "./public/css/menu.css": "/html/static/css/menu.css",
-  "./public/css/solarized.css": "/html/static/css/solarized.css",
-  "./public/css/tiny_dark.css": "/html/static/css/tiny_dark.css",
-  "./public/css/tiny_light.css": "/html/static/css/tiny_light.css",
-  "./public/css/an-old-hope.css": "/html/static/css/an-old-hope.css",
-};
-
-const scripts = {
-  "./public/js/index.js": "/html/static/scripts/index.js",
-};
-
-const media = {
-  "./public/media/logo.png": "/html/static/media/logo.png",
-  "./public/media/github.svg": "/html/static/media/github.svg",
-  "./public/media/twitter.svg": "/html/static/media/twitter.svg",
-  "./public/media/linkedin.svg": "/html/static/media/linkedin.svg",
-  "./public/media/avatar.svg": "/html/static/media/avatar.svg",
-};
-
-// Make the various directories
-await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/css`;
-await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/scripts`;
-await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static/media`;
-
-const copyFiles = async (filesMap) => {
-  for (const f of Object.keys(filesMap)) {
-    const from = f;
-    const to = filesMap[f];
-    const fileName = path.basename(from);
-    await $`docker cp ${from} temp_container:${to}`;
-    console.log(`Copied ${fileName}`);
-  }
-};
-
-const postInstall = async (files) => {
-  const listOfFiles = Object.values(files);
-  const fileNames = listOfFiles.map((f) => path.basename(f));
-  await $`docker run --rm --name temp_container -v blog_content:/html fix_ownership_container chown node:node ${listOfFiles}`;
-  await $`docker run --rm --name temp_container -v blog_content:/html fix_ownership_container chmod 777 ${listOfFiles}`;
-  console.log(`chown and chmod ${fileNames.join(", ")}`);
-};
-
-// Create a build of the nginxProxy container which has the node user and group
-$.quote = (v) => v;
-await $`docker build --quiet -t fix_ownership_container -f ../nginxProxy/dockerfile ../nginxProxy`;
-$.quote = q;
-
-//  Make dist directory inside the blog_content volume
-await $`docker run --rm --name temp_container -v blog_content:/html alpine mkdir -p /html/static`;
-
-await createTempContainer("temp_container", ["blog_content:/html"], "alpine");
-if (blogEnv === "development") {
-  copyFiles(htmlDevelopment);
-} else {
-  copyFiles(htmlProduction);
-}
-
-await copyFiles(favicon);
-await copyFiles(styles);
-await copyFiles(scripts);
-await copyFiles(media);
-
-await deleteTempContainer("temp_container");
-
-if (blogEnv === "development") {
-  await postInstall(htmlDevelopment);
-} else {
-  await postInstall(htmlProduction);
-}
-await postInstall(favicon);
-await postInstall(styles);
-await postInstall(scripts);
-await postInstall(media);
-
-console.log("Completed copying media");
-
+console.log(chalk.bgGray("SCRIPTS"));
+const scriptFiles = (
+  await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${scriptsPath}:/scripts" alpine ls -l /html/static/scripts`
+).stdout.trim();
+console.log(scriptFiles);
 console.log(chalk.bgCyan("[COMPLETE]\n"));
 
 console.log(chalk.bgCyan("[STEP]\t Moving certificates to blog_nginx_proxy_certs volume"));
