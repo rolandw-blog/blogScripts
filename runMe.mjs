@@ -123,6 +123,9 @@ await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${cssP
 await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${mediaPath}:/media" alpine cp -r /media /html/static`;
 await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${scriptsPath}:/scripts" alpine cp -r /scripts /html/static`;
 
+// fix permissions
+await $`docker run --rm --name temp_container -v blog_content:/html node:16 chown -R node:node /html`;
+
 console.log(chalk.bgGray("CSS"));
 const cssFiles = (
   await $`docker run --rm --name temp_container -v "blog_content:/html" -v "${cssPath}:/css" alpine ls -l /html/static/css`
